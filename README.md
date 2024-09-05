@@ -32,10 +32,10 @@ Annabelle (Father Grigori's rifle), Hopper Mine
 
 ### By using this pack, you agree to the following terms:
 
-- Have fun with the weapons
-- Provide credit for usage
+- Do not redistribute anything used in this pack under a different name, under monetisation, or with modified source code
 - Report bugs and issues if you find them. Do not keep them secret
-- Do not redestribute anything used in this pack under a different name, under monetisation, or with modified source code
+- Provide credit for usage
+- Have fun with the weapons
 
 <details>
 <summary>- I agree to these terms, gibe da waepons nao</summary>
