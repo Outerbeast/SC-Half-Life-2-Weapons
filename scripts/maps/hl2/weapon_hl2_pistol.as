@@ -111,9 +111,9 @@ final class weapon_hl2_pistol : CustomGunBase
     }
 
     void Idle()
-	{
-		ANIM_PISTOL AnimIdle = self.m_iClip < 1 ? ANIM_PISTOL::EMPTY_IDLE : ANIM_PISTOL::IDLE;
-		
+    {
+        ANIM_PISTOL AnimIdle = self.m_iClip < 1 ? ANIM_PISTOL::EMPTY_IDLE : ANIM_PISTOL::IDLE;
+
         if( AnimIdle == ANIM_PISTOL::IDLE )
         {
             const float fl = g_PlayerFuncs.SharedRandomFloat( m_pPlayer.random_seed, 0.0f, 1.0f );
@@ -123,10 +123,10 @@ final class weapon_hl2_pistol : CustomGunBase
             else if( fl <= 0.3f )
                 AnimIdle = ANIM_PISTOL::FIDGET;
         }
-        
+
         self.SendWeaponAnim( AnimIdle );
         self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_PISTOL[AnimIdle];
-	}
+    }
 
     bool PreShoot()
     {
@@ -170,12 +170,12 @@ final class weapon_hl2_pistol : CustomGunBase
     void PrimaryAttack()
     {
         if( self.m_iClip < 1 )
-		{
-			self.PlayEmptySound();
-			self.m_flNextPrimaryAttack = g_Engine.time + 0.15f;
+        {
+            self.PlayEmptySound();
+            self.m_flNextPrimaryAttack = g_Engine.time + 0.15f;
 
-			return;
-		}
+            return;
+        }
         // Can't shoot full auto;
         if( m_pPlayer.m_afButtonPressed & IN_ATTACK == 0 )
         {
@@ -193,12 +193,12 @@ final class weapon_hl2_pistol : CustomGunBase
     void SecondaryAttack()
     {
         if( self.m_iClip < 1 )
-		{
-			self.PlayEmptySound();
-			self.m_flNextSecondaryAttack = g_Engine.time + 0.15f;
+        {
+            self.PlayEmptySound();
+            self.m_flNextSecondaryAttack = g_Engine.time + 0.15f;
 
-			return;
-		}
+            return;
+        }
 
         if( self.m_iClip == 1 )
             Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_10DEGREES ), self.BulletAccuracy( VECTOR_CONE_8DEGREES, VECTOR_CONE_4DEGREES, VECTOR_CONE_3DEGREES ), BULLET_PLAYER_9MM );
@@ -224,10 +224,10 @@ final class weapon_hl2_pistol : CustomGunBase
     }
 
     void Holster(int skiplocal)
-	{
-		self.m_fInReload = false;
-		BaseClass.Holster( skiplocal );
-	}
+    {
+        self.m_fInReload = false;
+        BaseClass.Holster( skiplocal );
+    }
 };
 
 }

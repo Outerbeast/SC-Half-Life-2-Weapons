@@ -13,13 +13,13 @@ namespace HL2_WEAPONS
 
 enum ANIM_SMG
 {
-	IDLE,
-	LAUNCH_GL,
-	RELOAD,
-	DRAW,
-	SHOOT1,
-	SHOOT2,
-	SHOOT3,
+    IDLE,
+    LAUNCH_GL,
+    RELOAD,
+    DRAW,
+    SHOOT1,
+    SHOOT2,
+    SHOOT3,
     ADS_TO,
     ADS_IDLE,
     ADS_FROM,
@@ -78,12 +78,12 @@ const string strWeapon_SMG = "weapon_hl2_smg";
 
 bool RegisterSMG()
 {
-	g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strWeapon_SMG, strWeapon_SMG );
+    g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strWeapon_SMG, strWeapon_SMG );
 
     if( cvarMP7GL.GetInt() < 1 )
         I_STATS_SMG[WpnStatIdx::iMaxAmmo2] = -1;
 
-	g_ItemRegistry.RegisterWeapon( strWeapon_SMG, "hl2", "9mm", ( I_STATS_SMG[WpnStatIdx::iMaxAmmo2] > 0 ? "ARgrenades" : "" ) );
+    g_ItemRegistry.RegisterWeapon( strWeapon_SMG, "hl2", "9mm", ( I_STATS_SMG[WpnStatIdx::iMaxAmmo2] > 0 ? "ARgrenades" : "" ) );
     g_Game.PrecacheOther( strWeapon_SMG );
 
     return g_CustomEntityFuncs.IsCustomEntity( strWeapon_SMG );
@@ -224,7 +224,7 @@ final class weapon_hl2_smg : CustomGunBase
     }
 
     void Reload()
-	{
+    {
         if( self.pev.nextthink > g_Engine.time )
             return;
 
@@ -240,13 +240,13 @@ final class weapon_hl2_smg : CustomGunBase
         if( self.m_iClip < self.iMaxClip() )
             BaseClass.Reload();
 
-		if( self.DefaultReload( self.iMaxClip(), ANIM_SMG::RELOAD, FL_ANIMTIME_SMG[ANIM_SMG::RELOAD], 0 ) )
+        if( self.DefaultReload( self.iMaxClip(), ANIM_SMG::RELOAD, FL_ANIMTIME_SMG[ANIM_SMG::RELOAD], 0 ) )
         {
             g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_ITEM, "hl2/mp7_reload.ogg", 1.0, ATTN_NORM, 0, 95 + Math.RandomLong( 0, 10 ) );
             SetThink( null );
             self.pev.nextthink = 0.0f;
         }
-	}
+    }
 };
 
 }

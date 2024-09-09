@@ -51,17 +51,17 @@ array<string>
     {
         "models/hl2/w_357.mdl",
         "models/hl2/p_357.mdl",
-		"models/hl2/v_357.mdl",
-		"sprites/hl2/weapon_hl2_revolver.spr"
+        "models/hl2/v_357.mdl",
+        "sprites/hl2/weapon_hl2_revolver.spr"
     },
     STR_REVOLVER_SOUNDS =
     {
-		"hl2/357_shot1.ogg",
-		"hl2/357_shot2.ogg",
-		"hl2/357_reload1.ogg",
-		"hl2/357_reload3.ogg",
-		"hl2/357_reload4.ogg",
-		"hl2/357_spin1.ogg"
+        "hl2/357_shot1.ogg",
+        "hl2/357_shot2.ogg",
+        "hl2/357_reload1.ogg",
+        "hl2/357_reload3.ogg",
+        "hl2/357_reload4.ogg",
+        "hl2/357_spin1.ogg"
     };
 
 const string strWeapon_Revolver = "weapon_hl2_revolver";

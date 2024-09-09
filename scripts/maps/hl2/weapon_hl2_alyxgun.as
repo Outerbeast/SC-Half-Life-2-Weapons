@@ -53,7 +53,7 @@ array<string>
     {
         "models/hl2/w_alyxgun.mdl",
         "models/hl2/p_alyxgun.mdl",
-        "models/hl2/p_alyxgun_smg.mdl",
+        "models/hl2/p_alyxgun_auto.mdl",
         "models/hl2/v_alyxgun.mdl",
         "sprites/hl2/weapon_hl2_alyxgun.spr"
     },
@@ -88,7 +88,7 @@ final class weapon_hl2_alyxgun : CustomGunBase
     void Precache()
     {   
         PrecacheContent( STR_ALYXGUN_MODELS, STR_ALYXGUN_SOUNDS );
-        g_Game.PrecacheGeneric( "sprites/hl2/weapon_hl2_alyxgun_smg.txt" );
+        g_Game.PrecacheGeneric( "sprites/hl2/weapon_hl2_alyxgun_auto.txt" );
         BaseClass.Precache();
     }
 
@@ -173,8 +173,8 @@ final class weapon_hl2_alyxgun : CustomGunBase
         if( !self.m_fIsAkimbo )
         {
             self.SendWeaponAnim( ANIM_ALYXGUN::PISTOL_TO_SMG );
-            m_pPlayer.pev.weaponmodel = "models/hl2/p_alyxgun_smg.mdl";
-            self.LoadSprites( m_pPlayer, self.GetClassname() + "_smg" );
+            m_pPlayer.pev.weaponmodel = "models/hl2/p_alyxgun_auto.mdl";
+            self.LoadSprites( m_pPlayer, self.GetClassname() + "_auto" );
             self.m_fIsAkimbo = true;
         }
         else
