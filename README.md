@@ -1,3 +1,4 @@
+![alt text](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/blob/main/hl2_sven_weaps_poster_v2.png?raw=true)
 # Half-Life 2 Weapons Pack
 #### Half-Life 2 weapons for Sven Co-op
 
