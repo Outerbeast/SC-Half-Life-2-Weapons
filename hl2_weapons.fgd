@@ -1,0 +1,132 @@
+// Half-Life 2 Weapons FGD
+@BaseClass = Targetname
+[
+	targetname(target_source) : "Name"
+	ondestroyfn(string) : "OnDestroy Function"
+]
+
+@BaseClass = Angles
+[
+	angles(string) : "Pitch Yaw Roll (X Y Z)" : "0 0 0"
+]
+
+@BaseClass = Target
+[
+	target(target_destination) : "Target"
+]
+
+@BaseClass base(Target) = Targetx
+[
+	delay(string) : "Delay Before Trigger" : "0"
+	killtarget(target_destination) : "Kill Target"
+]
+
+@BaseClass size(0 0 0, 32 32 32) color(80 0 200) base(Targetname, Angles) = Pickup
+[
+	renderfx(choices) : "Render FX" : 0 =
+	[
+		0: "Normal"
+		1: "Slow Pulse"
+		2: "Fast Pulse"
+		3: "Slow Wide Pulse"
+		4: "Fast Wide Pulse"
+		9: "Slow Strobe"
+		10: "Fast Strobe"
+		11: "Faster Strobe"
+		12: "Slow Flicker"
+		13: "Fast Flicker"
+		5: "Slow Fade Away"
+		6: "Fast Fade Away"
+		7: "Slow Become Solid"
+		8: "Fast Become Solid"
+		14: "Constant Glow"
+		15: "Distort"
+		16: "Hologram (Distort + fade)"
+	]
+
+	rendermode(choices) : "Render Mode" : 0 =
+	[
+		0: "Normal"
+		1: "Color"
+		2: "Texture"
+		3: "Glow"
+		4: "Solid"
+		5: "Additive"
+	]
+
+	renderamt(integer) : "FX Amount (1 - 255)"
+	rendercolor(color255) : "FX Color (R G B)" : "0 0 0"
+	movetype(choices) : "Gravity Setting" : 0 =
+	[
+		0: "Fall to the ground (default)"
+		5: "Hover in the air"
+	]
+
+	m_flCustomRespawnTime(string) : "Custom respawn time"
+
+	spawnflags(Flags) =
+	[
+		128 : "TOUCH Only" : 0
+		256 : "USE Only" : 0
+		512 : "Can Use w/o LoS" : 0
+		1024: "Disable Respawn" : 0
+	]
+]
+
+@BaseClass size(-16 -16 0, 16 16 32) color(2 64 240) base(Pickup ) = Weapon
+[
+	dmg(integer) : "Custom Damage" : 0
+	wpn_v_model(studio) : "Custom V_Model" : ""
+	wpn_w_model(studio) : "Custom W_Model" : ""
+	wpn_p_model(studio) : "Custom P_Model" : ""
+	soundlist(string) : "Sound Replacement File"
+	CustomSpriteDir(string) : "Custom sprite directory"
+
+	IsNotAmmoItem(choices) : "Is Ammo Item" : 0 =
+	[
+		0 : "Yes"
+		1 : "No"
+	]
+
+	exclusivehold(choices) : "Exclusive Hold" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@BaseClass size(-8 -8 0, 8 8 16) color(4 128 240) base(Pickup ) = Ammo
+[
+	model(studio) : "Custom Model" : ""
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname) size(-4 -4 -4, 4 4 4) color(200 100 50) = info_register_hl2weapons : "Register Half-Life 2 Weapons"
+[
+	spawnflags(Flags) =
+	[
+		0 : "Replace stock weapons" : 0
+	]
+]
+
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_alyxgun.mdl" ) = weapon_hl2_alyxgun : "Alyx's Gun" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_ar2.mdl" ) = weapon_hl2_ar2 : "AR2 Pulse Rifle" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_crossbow.mdl" ) = weapon_hl2_crossbow : "Crossbow" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_grenade.mdl" ) = weapon_hl2_frag : "Frag Grenade" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_gravgun.mdl" ) = weapon_hl2_gravgun : "Gravity Gun" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_oicw.mdl" ) = weapon_hl2_oicw : "OICW Assault Rifle" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_usp.mdl" ) = weapon_hl2_pistol : "USP 9mm Pistol" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_pulsecannon.mdl" ) = weapon_hl2_pulsecannon : "Combine Pulse Cannon" []
+@PointClass base( Weapon, Targetx ) studio( "models/w_357.mdl" ) = weapon_hl2_revolver : "Colt Python 357 Revolver" []
+@PointClass base( Weapon, Targetx ) studio( "models/w_shotgun.mdl" ) = weapon_hl2_shotgun : "SPAS12 Shotgun" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_mp7.mdl" ) = weapon_hl2_smg : "MP7 Submachine Gun" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_combinesniper.mdl" ) = weapon_hl2_sniperrifle : "Overwatch Sniper Rifle" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_stunstick.mdl" ) = weapon_hl2_stunstick : "Stun Stick" []
+
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_ar2_clip.mdl" ) = ammo_hl2_ar2 : "AR2 Ammo" []
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_ar2_energy.mdl" ) = ammo_hl2_ar2_altfire : "AR2 Energy Ball Ammo" []
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_crossbow_clip.mdl" ) = ammo_hl2_crossbow : "Crossbow Bolt" []
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_argrenade_20mm.mdl" ) = ammo_hl2_oicw_grenade : "20mm Grenades" []
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_argrenade_20mmclip.mdl" ) = ammo_hl2_oicw_grenadeclip : "20mm Grenade Clip" []
+@PointClass base( Ammo, Targetx ) studio( "models/hl2/w_sniperrifle_clip.mdl" ) = ammo_hl2_sniperrifle : "Sniper Rifle Ammo" []

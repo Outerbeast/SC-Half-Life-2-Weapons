@@ -32,10 +32,10 @@ Annabelle (Father Grigori's rifle), Hopper Mine
 
 ### By using this pack, you agree to the following terms:
 
-- Do not redistribute anything used in this pack under a different name, under monetisation, or with modified source code
-- Report bugs and issues if you find them. Do not keep them secret
-- Provide credit for usage
 - Have fun with the weapons
+- Provide credit for usage
+- Report bugs and issues if you find them. Do not keep them secret
+- Do not redestribute anything used in this pack under a different name, under monetisation, or with modified source code
 
 <details>
 <summary>- I agree to these terms, gibe da waepons nao</summary>
@@ -65,13 +65,14 @@ Download - [GitHub](), [Boderman.net]()
 
     OR
 
-    Execute `HL2_WEAPONS::RegisterWeapons()` in MapInit of your main map script:
+    Execute `HL2_WEAPONS::RegisterWeapons()` in MapInit of the main map script:
     ```
     void MapInit()
     {
         HL2_WEAPONS::RegisterWeapons();
     }
     ```
+    If the map doesn't have a map script, simply create one, name it, and stick the above code into that script file, then add `map_script <your_script_name_here>` to four map's CFG file.
 
 A fgd file is included `hl2_weapons.fgd` to use with a map editor to add weapons and ammunition to your levels.
 
@@ -80,6 +81,7 @@ A fgd file is included `hl2_weapons.fgd` to use with a map editor to add weapons
 - Garompa: Graphics (models, textures, icons, visual fx), testing, feedback
 - KernCore, H2: Support
 - DNIO071: Poster
+- SV BOY: Testing
 
 ### Special thanks:
 - aperture_aerospace: OICW model, OICW textures
