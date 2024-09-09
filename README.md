@@ -41,7 +41,7 @@ Annabelle (Father Grigori's rifle), Hopper Mine
 <details>
 <summary>- I agree to these terms, gibe da waepons nao</summary>
 
-Download - [GitHub](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/archive/refs/heads/main.zip)
+[Download](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/archive/refs/heads/main.zip)
 
 </details>
 
