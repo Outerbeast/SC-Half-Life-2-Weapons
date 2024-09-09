@@ -1,0 +1,5 @@
+3	// number of sprites
+
+weapon			640	hl2/weapon_hl2_frag	0	0	170	45
+weapon_s		640	hl2/weapon_hl2_frag	0	45	170	45
+ammo			640	hl2/hl2ammo		48	84	24	24

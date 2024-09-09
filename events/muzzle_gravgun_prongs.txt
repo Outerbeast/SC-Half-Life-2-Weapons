@@ -1,0 +1,27 @@
+// The attachment number. If set to -1, the Bone set below will be used instead.
+attachment 0
+
+// Bone number. Only used if attachment is -1.
+bone 4 
+
+// Specify an offset. Similar to how attachments are defined in half-life models. 
+// Only works when attachment = -1 and a valid bone number is supplied.
+// Format: offset <x> <y> <z>
+offset 0 0 0
+
+// Sprite file to use
+spritename sprites/glow02.spr 
+
+// Sprite scale
+scale  1
+
+// For changing the color
+colorR 255
+colorB 185
+colorG 80
+
+// 0=Normal, 1=Color, 2=Texture, 3=Glow, 4=Alpha, 5=Additive (default).
+rendermode 5
+
+//0 = invisible, 255 = fully visible
+transparency 255

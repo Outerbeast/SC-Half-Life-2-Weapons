@@ -1,0 +1,7 @@
+5
+
+weapon				640 		hl2/weapon_hl2_pulsecannon 0	0	170	45
+weapon_s			640 		hl2/weapon_hl2_pulsecannon 0	46	170	45
+ammo				640		hl2/hl2ammo		144	60	24	24
+crosshair			640		ofch1		24	0	24	24
+autoaim				640		crosshairs	24	72	24	24

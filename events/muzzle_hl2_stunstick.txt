@@ -1,0 +1,10 @@
+attachment 0 
+bone 10 
+spritename sprites/hl2/stunstick_shock.spr 
+scale  10
+colorR 255
+colorG 255
+colorB 200
+offset 0 0 0
+rendermode 5
+transparency 255

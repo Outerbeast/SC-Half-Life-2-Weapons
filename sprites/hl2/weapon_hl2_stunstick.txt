@@ -1,0 +1,4 @@
+2	// number of sprites
+
+weapon			640	hl2/weapon_hl2_stunstick	0	0	170	45
+weapon_s		640	hl2/weapon_hl2_stunstick	0	45	170	45
