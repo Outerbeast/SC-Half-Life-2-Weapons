@@ -31,12 +31,14 @@ If you find any problems, please post an issue in the project's github repositor
 Planned weapons for a future update: 
 Annabelle (Father Grigori's rifle), Hopper Mine
 
+## Download
+
 ### By using this pack, you agree to the following terms:
 
 - Have fun with the weapons
 - Provide credit for usage
-- Report bugs and issues if you find them. Do not keep them secret
-- Do not redestribute anything used in this pack under a different name, under monetisation, or with modified source code
+- [Report bugs and issues if you find them](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/issues). Do not keep them secret
+- Do not redistribute anything used in this pack under a different name, under monetisation, or with modified source code
 
 <details>
 <summary>- I agree to these terms, gibe da waepons nao</summary>
