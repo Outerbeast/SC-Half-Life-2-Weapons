@@ -46,7 +46,7 @@ array<string>
         "models/hl2/v_combinesniper.mdl",
         "models/hl2/w_combinesniper.mdl",
         "models/hl2/scope_combinesniper.mdl",
-        "models/hl2/w_sniperrifle_clip.mdl",
+        "models/hl2/w_combinesniper_clip.mdl",
         "sprites/hl2/weapon_hl2_sniperrifle.spr",
         "sprites/laserbeam.spr"
     },
@@ -276,7 +276,7 @@ final class ammo_hl2_sniperrifle : CustomAmmoBase
 {
     ammo_hl2_sniperrifle()
     {
-        strModel = "models/hl2/w_sniperrifle_clip.mdl";
+        strModel = "models/hl2/w_combinesniper_clip.mdl";
         strPickupSound = "items/9mmclip1.wav";
         iClipSize = 1;
         iMax = I_STATS_SRIFLE[WpnStatIdx::iMaxAmmo1];
