@@ -19,10 +19,10 @@ If you find any problems, please post an issue in the project's github repositor
 - Gravity Gun
 - USP Pistol
 - Alyx's Gun
-- 357 Colt Python
+- 357 Colt Python Revolver
 - MP7 Submachine Gun
 - SPAS12 Shotgun
-- OICW
+- OICW Assault Rifle
 - AR2 Pulse Rifle
 - Crossbow
 - Overwatch Sniper Rifle
