@@ -280,7 +280,7 @@ abstract class CustomGunBase : CustomWeaponBase
             return true;
 
         if( --self.m_iClip < 1 && m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) < 1 )
-			m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
+            m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
 
         return true;
     }
@@ -339,25 +339,25 @@ abstract class CustomGunBase : CustomWeaponBase
     }
     // Credit: KernCore, https://github.com/KernCore91/-SC-Insurgency-Weapons-Project/blob/master/scripts/maps/ins2/base.as#L462C2-L477
     void EjectCasing(float forwardScale, float rightScale, float upScale, TE_BOUNCE soundtype = TE_BOUNCE_SHELL, int iShellModel = 0) final
-	{
+    {
         if( m_pPlayer is null )
             return;
 
-		Vector vecForward, vecRight, vecUp, vecShellVelocity, vecShellOrigin;
-		g_EngineFuncs.AngleVectors( m_pPlayer.pev.v_angle, vecForward, vecRight, vecUp );
+        Vector vecForward, vecRight, vecUp, vecShellVelocity, vecShellOrigin;
+        g_EngineFuncs.AngleVectors( m_pPlayer.pev.v_angle, vecForward, vecRight, vecUp );
 
-		const float
-            fR = Math.RandomFloat( 50, 70 ),
-            fU = Math.RandomFloat( 100, 150 );
+        const float
+        fR = Math.RandomFloat( 50, 70 ),
+        fU = Math.RandomFloat( 100, 150 );
 
-		for( int i = 0; i < 3; i++ )
-		{
-			vecShellVelocity[i] = m_pPlayer.pev.velocity[i] + vecRight[i] * fR + vecUp[i] * fU + vecForward[i] * 25;
-			vecShellOrigin[i] = m_pPlayer.pev.origin[i] + m_pPlayer.pev.view_ofs[i] + vecUp[i] * upScale + vecForward[i] * forwardScale + vecRight[i] * rightScale;
-		}
+        for( int i = 0; i < 3; i++ )
+        {
+            vecShellVelocity[i] = m_pPlayer.pev.velocity[i] + vecRight[i] * fR + vecUp[i] * fU + vecForward[i] * 25;
+            vecShellOrigin[i] = m_pPlayer.pev.origin[i] + m_pPlayer.pev.view_ofs[i] + vecUp[i] * upScale + vecForward[i] * forwardScale + vecRight[i] * rightScale;
+        }
 
         g_EntityFuncs.EjectBrass( vecShellOrigin, vecShellVelocity, m_pPlayer.pev.angles.y, iShellModel > 0 ? iShellModel : m_iShell, soundtype );
-	}
+    }
 
     void Recoil(Vector& in vecAimPunch, float flPunchScale = 1.0f) final
     {
