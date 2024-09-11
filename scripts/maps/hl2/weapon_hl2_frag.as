@@ -167,7 +167,7 @@ HookReturnCode GrenadeSecondaryAttack(CBasePlayer@ pPlayer, CBasePlayerWeapon@ p
     const ANIM_FRAG Anim = ANIM_FRAG::PINPULL_LOW;
     pWeapon.SendWeaponAnim( Anim );
     FL_NEXT_TOSS[pPlayer.entindex()] = FL_ANIMTIME_FRAG[Anim];
-    pWeapon.m_flNextPrimaryAttack = g_Engine.time + FL_NEXT_TOSS[Anim];
+    pWeapon.m_flNextPrimaryAttack = g_Engine.time + FL_NEXT_TOSS[pPlayer.entindex()];
     g_Scheduler.SetTimeout( "TossFrag", FL_NEXT_TOSS[pPlayer.entindex()], EHandle( pPlayer ), EHandle( pWeapon ) );
 
     return HOOK_CONTINUE;
