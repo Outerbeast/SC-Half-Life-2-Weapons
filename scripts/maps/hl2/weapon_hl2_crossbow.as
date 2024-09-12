@@ -55,7 +55,12 @@ array<string>
         "models/hl2/scope_xbow.mdl",
         "sprites/hl2/weapon_hl2_crossbow.spr"
     },
-    STR_XBOW_SOUNDS = { "hl2/xbow_fire1.ogg" };
+    STR_XBOW_SOUNDS =
+    {
+        "hl2/xbow_fire1.ogg",
+        "hl2/bolt_load1.ogg",
+        "hl2/bolt_load2.ogg"
+    };
 
 const float flXbowBoltSpeed = 1000.0f;
 const string
