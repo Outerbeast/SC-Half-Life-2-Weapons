@@ -82,9 +82,9 @@ A fgd file is included `hl2_weapons.fgd` to use with a map editor to add weapons
 # Credits
 - Outerbeast: Project leader, programming
 - Garompa: Graphics (models, textures, icons, visual fx), sounds, testing, feedback
+- DNIO071: Testing, poster design
 - KernCore, H2: Support
 - SV BOY, Alekk: Testing
-- DNIO071: Poster
 
 ### Special thanks:
 - aperture_aerospace: OICW model, OICW textures
