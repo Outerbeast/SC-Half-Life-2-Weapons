@@ -53,7 +53,8 @@ array<string>
         "models/hl2/w_crossbow_clip.mdl",
         "models/hl2/crossbow_bolt.mdl",
         "models/hl2/scope_xbow.mdl",
-        "sprites/hl2/weapon_hl2_crossbow.spr"
+        "sprites/hl2/weapon_hl2_crossbow.spr",
+        "sprites/hl2/hl2ammo.spr"
     },
     STR_XBOW_SOUNDS =
     {

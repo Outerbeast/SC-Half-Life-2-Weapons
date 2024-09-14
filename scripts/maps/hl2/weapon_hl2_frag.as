@@ -43,6 +43,7 @@ array<string>
         "models/hl2/p_grenade.mdl",
         "models/hl2/w_grenade.mdl",
         "sprites/hl2/weapon_hl2_frag.spr",
+        "sprites/hl2/hl2ammo.spr",
         "sprites/laserbeam.spr"
     },
     STR_FRAG_SOUNDS = { "hl2/grenade_tick1.ogg" };

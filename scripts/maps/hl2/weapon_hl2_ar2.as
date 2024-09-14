@@ -81,6 +81,7 @@ array<string>
         "models/hl2/disintegration_fx.mdl",
         "sprites/hl2/weapon_hl2_ar2.spr",
         "sprites/hl2/ar2_muzzleflash.spr",
+        "sprites/hl2/hl2ammo.spr",
         "sprites/laserbeam.spr"
     },
     STR_AR2_SOUNDS =
@@ -96,7 +97,7 @@ array<string>
         "hl2/energy_sing_loop.ogg",
         "hl2/ar2_reload_push.ogg",
         "hl2/ar2_reload_rotate.ogg",
-        "weapons/dryfire_rifle.ogg"
+        "weapons/dryfire_rifle.wav"
     };
 
 const float flEnergyBallSpeed = 700.0f;

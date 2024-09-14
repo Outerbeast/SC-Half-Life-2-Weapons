@@ -33,8 +33,8 @@ const array<float> FL_ANIMTIME_OICW =
     0.27f,
     3.41f,
     3.33f,
-    0.31f,
-    0.38f,
+    0.63f,
+    0.75f,
     2.71f,
     1.07f,
     3.0f,
@@ -170,11 +170,12 @@ final class weapon_hl2_oicw : CustomGunBase
         const int AnimIdle = g_PlayerFuncs.SharedRandomLong( m_pPlayer.random_seed, ANIM_OICW::IDLE, ANIM_OICW::FIDGET );
         self.SendWeaponAnim( AnimIdle );
         self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_OICW[AnimIdle];
+        m_iShotsFired = 0;
     }
 
     bool PreShoot()
     {
-        self.SendWeaponAnim( g_PlayerFuncs.SharedRandomLong( m_pPlayer.random_seed, ANIM_OICW::SHOOT1, ANIM_OICW::SHOOT2 ) );
+        self.SendWeaponAnim( m_iShotsFired > 2 ? ANIM_OICW::SHOOT2 : ANIM_OICW::SHOOT1 );
         return true;
     }
 
@@ -196,6 +197,8 @@ final class weapon_hl2_oicw : CustomGunBase
         if( iShots < 1 )
         {
             self.m_flNextBurstRound = -1.0f;
+            m_iShotsFired = 0;
+
             return;
         }
 
@@ -226,7 +229,7 @@ final class weapon_hl2_oicw : CustomGunBase
             if( --self.m_iClip2 < 1 )
                 m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
 
-            self.m_flNextPrimaryAttack = self.m_flNextTertiaryAttack = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::LAUNCH_GL];
+            self.m_flNextPrimaryAttack = self.m_flNextTertiaryAttack = self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::LAUNCH_GL];
         }
 
         if( m_pPlayer.m_rgAmmo( self.m_iSecondaryAmmoType ) + self.m_iClip2 < 1 )
@@ -341,7 +344,10 @@ final class weapon_hl2_oicw : CustomGunBase
                 self.m_flNextPrimaryAttack = g_Engine.time + 0.5f;// duration of burst
         }
 
-        self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::SHOOT2];
+        if( self.m_iClip < 2 )
+            self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::SHOOT2];
+        else
+            self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::SHOOT1] * 3;
     }
 
     void SecondaryAttack()
@@ -353,8 +359,6 @@ final class weapon_hl2_oicw : CustomGunBase
             AimDownSights( 40 );
         else
             HipFire();
-
-        self.m_flNextSecondaryAttack = g_Engine.time + 1.0f;
     }
 
     void TertiaryAttack()

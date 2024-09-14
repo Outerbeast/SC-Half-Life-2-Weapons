@@ -94,8 +94,6 @@ bool RegisterWeapons(const bool blReplaceStockWeapons = true)
         g_ClassicMode.ForceItemRemap( g_Hooks.RegisterHook( Hooks::PickupObject::Materialize, SwapItem ) );
     }
 
-    g_Game.PrecacheModel( "sprites/hl2/hl2ammo.spr" );
-
     return blAllRegistered;
 }
 
