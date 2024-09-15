@@ -215,7 +215,7 @@ final class weapon_hl2_shotgun: CustomGunBase
             return;
         }
 
-        Shoot( 7, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.08716f, 0.04362f, 0.00f ), BULLET_PLAYER_BUCKSHOT, 2048.0f );
+        Shoot( 7, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.08716f, 0.04362f, 0.00f ), BULLET_PLAYER_BUCKSHOT );
         self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_SHOTGUN[ANIM_SHOTGUN::FIRE1] + ( self.m_iClip < 1 ? 0.5f : 0.0f );
     }
 
@@ -237,7 +237,7 @@ final class weapon_hl2_shotgun: CustomGunBase
             return;
         }
 
-        Shoot( 12, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.17365f, 0.04362f, 0.0f ), BULLET_PLAYER_BUCKSHOT, 2048.0f );
+        Shoot( 12, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.17365f, 0.04362f, 0.0f ), BULLET_PLAYER_BUCKSHOT );
         self.m_flNextSecondaryAttack = self.m_flNextPrimaryAttack = g_Engine.time + FL_ANIMTIME_SHOTGUN[ANIM_SHOTGUN::ALTFIRE] + ( self.m_iClip < 1 ? 0.5f : 0.0f );
     }
 
