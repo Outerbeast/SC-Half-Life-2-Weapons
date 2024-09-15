@@ -2,7 +2,7 @@
     Primary fire: Shoots full auto at 600rpm
     Secondary fire: launches energy ball
     Primary Ammo: ammo_hl2_ar2, 30 in clip, 90 reserve
-    Secondary ammo: ammo_hl2_altfire, 3 reserve
+    Secondary ammo: ammo_hl2_ar2_altfire, 3 reserve
 
 Part of the SC Half-Life 2 Weapons Pack.
 - Outerbeast

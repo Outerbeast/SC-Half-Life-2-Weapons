@@ -359,6 +359,8 @@ final class weapon_hl2_oicw : CustomGunBase
             AimDownSights( 40 );
         else
             HipFire();
+
+        self.m_flNextSecondaryAttack = g_Engine.time + 1.0f;
     }
 
     void TertiaryAttack()
