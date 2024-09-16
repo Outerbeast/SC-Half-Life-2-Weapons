@@ -63,7 +63,7 @@ array<string>
         "hl2/bolt_load2.ogg"
     };
 
-const float flXbowBoltSpeed = 1000.0f;
+const float flXbowBoltSpeed = 1250.0f;
 const string
     strWeapon_XBow = "weapon_hl2_crossbow",
     strAmmo_XBow = "ammo_hl2_crossbow";

@@ -360,7 +360,7 @@ final class weapon_hl2_oicw : CustomGunBase
         else
             HipFire();
 
-        self.m_flNextSecondaryAttack = g_Engine.time + 1.0f;
+        self.m_flNextSecondaryAttack = g_Engine.time + 0.5f;
     }
 
     void TertiaryAttack()
