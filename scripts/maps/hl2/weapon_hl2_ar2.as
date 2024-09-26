@@ -123,7 +123,7 @@ bool RegisterAR2()
     return g_CustomEntityFuncs.IsCustomEntity( strWeapon_AR2 );
 }
 
-final class weapon_hl2_ar2: CustomGunBase
+final class weapon_hl2_ar2 : CustomGunBase
 {
     weapon_hl2_ar2()
     {
@@ -544,7 +544,19 @@ final class ar2_energy_ball : ScriptBaseAnimating
         pFizzle.SUB_StartFadeOut();
         pFizzle.pev.velocity = pGhost.pev.velocity;
         pFizzle.pev.avelocity = pGhost.pev.avelocity;
-        
+        //!-ISSUE-!: TriggerCondition "Death" does not fire when the entity is deleted.
+        if( pTarget.IsMonster() )
+        {
+            CBaseMonster@ pMonster = pTarget.MyMonsterPointer();
+
+            if( pMonster.m_iTriggerCondition == 4 && pMonster.m_iszTriggerTarget != "" )
+            {
+                g_EntityFuncs.FireTargets( pMonster.m_iszTriggerTarget, m_pPlayer, pTarget, USE_TOGGLE );
+                pMonster.m_iszTriggerTarget = "";
+            }
+        }
+
+        pTarget.Killed( self.pev.owner.vars, GIB_NEVER );
         pTarget.SUB_Remove();
     }
 
