@@ -460,12 +460,45 @@ final class ar2_energy_ball : ScriptBaseAnimating
                 return;
         }
 
-        if( pOther.IsMonster() ? pOther.IRelationship( m_pPlayer ) > R_AL : ( pOther.IsBreakable() ? true : false ) )
+        if( pOther.IsMonster() ? pOther.IRelationship( m_pPlayer ) > R_AL : pOther.IsBreakable() )
         {
             pOther.TakeDamage( self.pev, self.pev.owner.vars, I_STATS_AR2[WpnStatIdx::iDamage2], DMG_BLAST | DMG_ENERGYBEAM | DMG_NEVERGIB );
+            
+            if( pOther.IsMonster() )
+            {
+                CBaseMonster@ pMonster = pOther.MyMonsterPointer();
+                bool blShouldTrigger = false;
 
-            if( pOther.IsMonster() && !pOther.IsMachine() && !pOther.IsAlive() )
-                DisintegrateTarget( pOther );
+                switch( pMonster.m_iTriggerCondition )
+                {
+                    case 2:// Take Damage
+                    {
+                        blShouldTrigger = true;
+                        break;
+                    }
+
+                    case 3:// 50% Health Remaining
+                    {
+                        blShouldTrigger = pMonster.pev.health / pMonster.pev.max_health < 0.5f;
+                        break;
+                    }
+
+                    case 4:// Death
+                    {
+                        blShouldTrigger = !pMonster.IsAlive();
+                        break;
+                    }
+                }
+
+                if( blShouldTrigger )
+                {
+                    g_EntityFuncs.FireTargets( pMonster.m_iszTriggerTarget, m_pPlayer, pMonster, USE_TOGGLE );
+                    pMonster.m_iszTriggerTarget = "";
+                }
+
+                if( !pMonster.IsAlive() && !pMonster.IsMachine() )
+                    DisintegrateTarget( pOther );
+            }
 
             Bounce();
         }
@@ -486,9 +519,6 @@ final class ar2_energy_ball : ScriptBaseAnimating
 
         if( g_EntityFuncs.MonstersInSphere( @P_TARGETS, self.pev.origin, 128 ) < 1 )
             return;
-
-        do( P_TARGETS.removeAt( P_TARGETS.findByRef( null ) ) );
-        while( P_TARGETS.findByRef( null ) >= 0 );
 
         for( uint i = 0; i < P_TARGETS.length(); i++ )
         {
@@ -544,18 +574,7 @@ final class ar2_energy_ball : ScriptBaseAnimating
         pFizzle.SUB_StartFadeOut();
         pFizzle.pev.velocity = pGhost.pev.velocity;
         pFizzle.pev.avelocity = pGhost.pev.avelocity;
-        //!-ISSUE-!: TriggerCondition "Death" does not fire when the entity is deleted.
-        if( pTarget.IsMonster() )
-        {
-            CBaseMonster@ pMonster = pTarget.MyMonsterPointer();
-
-            if( pMonster.m_iTriggerCondition == 4 && pMonster.m_iszTriggerTarget != "" )
-            {
-                g_EntityFuncs.FireTargets( pMonster.m_iszTriggerTarget, m_pPlayer, pTarget, USE_TOGGLE );
-                pMonster.m_iszTriggerTarget = "";
-            }
-        }
-
+        // !-ISSUE-!: TriggerCondition "Death" does not fire when the entity is deleted.
         pTarget.Killed( self.pev.owner.vars, GIB_NEVER );
         pTarget.SUB_Remove();
     }
