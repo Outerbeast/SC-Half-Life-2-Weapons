@@ -268,7 +268,6 @@ final class weapon_hl2_sniperrifle : CustomGunBase
     {
         CustomGunBase::Holster( skiplocal );
         g_EntityFuncs.Remove( m_pAimLaser );
-        BaseClass.Holster( skiplocal );
     }
 };
 

@@ -392,15 +392,11 @@ final class weapon_hl2_oicw : CustomGunBase
 
     void Holster(int skiplocal = 0)
     {
-        if( self.m_fInZoom )
-            HipFire();
-
+        CustomGunBase::Holster( skiplocal );
+        g_Scheduler.RemoveTimer( fnBurst );
+        
         if( hLaserDot )
             hLaserDot.GetEntity().pev.effects |= EF_NODRAW;
-
-        g_Scheduler.RemoveTimer( fnBurst );
-
-        BaseClass.Holster( skiplocal );
     }
 
     void RetireWeapon()

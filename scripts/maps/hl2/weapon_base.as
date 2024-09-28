@@ -347,8 +347,8 @@ abstract class CustomGunBase : CustomWeaponBase
         g_EngineFuncs.AngleVectors( m_pPlayer.pev.v_angle, vecForward, vecRight, vecUp );
 
         const float
-        fR = Math.RandomFloat( 50, 70 ),
-        fU = Math.RandomFloat( 100, 150 );
+            fR = Math.RandomFloat( 50, 70 ),
+            fU = Math.RandomFloat( 100, 150 );
 
         for( int i = 0; i < 3; i++ )
         {
