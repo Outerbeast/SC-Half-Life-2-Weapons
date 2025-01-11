@@ -97,7 +97,7 @@ final class weapon_hl2_sniperrifle : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_combinesniper.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 20 );
+        SpawnWeapon( "models/hl2/w_combinesniper.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
         BaseClass.Spawn();
     }
 
@@ -175,22 +175,20 @@ final class weapon_hl2_sniperrifle : CustomGunBase
             return;
 
         CustomGunBase::AimDownSights( iZoomFov );
-
+        m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
         m_pPlayer.set_m_szAnimExtension( "sniperscope" );
         m_pPlayer.pev.viewmodel = "models/hl2/scope_combinesniper.mdl";
         g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/sniper_zoom.ogg", 0.7f, ATTN_NORM, 0, PITCH_NORM );
         g_PlayerFuncs.ConcussionEffect( m_pPlayer, 1.0f, 1.0f, 0.05f );// Add zoom drift
-        //m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
     }
 
     void HipFire()
     {
         CustomGunBase::HipFire();
-        
+        m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
         m_pPlayer.set_m_szAnimExtension( "sniper" );
         m_pPlayer.pev.viewmodel = self.GetV_Model( "models/hl2/v_combinesniper.mdl" );
         g_PlayerFuncs.ConcussionEffect( m_pPlayer, 0.0f, 0.0f, 0.0f );// remove zoom drift
-        //m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
     }
 
     void ItemPostFrame()

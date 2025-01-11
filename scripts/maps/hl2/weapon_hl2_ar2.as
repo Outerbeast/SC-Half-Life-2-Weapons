@@ -62,7 +62,7 @@ array<int> I_STATS_AR2 =
 {
     3,//iSlot,
     6,//iPosition,
-    90,//iMaxAmmo1,
+    120,//iMaxAmmo1,
     3,//iMaxAmmo2,
     30,//iMaxClip,
     int( g_EngineFuncs.CVarGetFloat( "sk_556_bullet" ) ),

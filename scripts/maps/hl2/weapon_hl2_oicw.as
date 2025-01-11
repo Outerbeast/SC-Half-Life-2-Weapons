@@ -104,7 +104,6 @@ final class weapon_hl2_oicw : CustomGunBase
 {
     private bool blGLMode;
     private EHandle hLaserDot, hGrenade;
-    private CScheduledFunction@ fnBurst;
     private HUDTextParams txtRangeInfo;
     private int iShellGrenade = g_Game.PrecacheModel( "models/hl2/shell_20mm.mdl" );
 
@@ -203,7 +202,7 @@ final class weapon_hl2_oicw : CustomGunBase
         }
 
         Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), self.BulletAccuracy( VECTOR_CONE_4DEGREES, VECTOR_CONE_3DEGREES, VECTOR_CONE_2DEGREES ), BULLET_PLAYER_SAW );
-        @fnBurst = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
     }
 
     bool ShootGrenade()
@@ -274,7 +273,7 @@ final class weapon_hl2_oicw : CustomGunBase
     {
         m_pPlayer.set_m_szAnimExtension( "m16" );
         m_pPlayer.pev.viewmodel = self.GetV_Model( "models/hl2/v_oicw.mdl" );
-        g_PlayerFuncs.HudMessage( m_pPlayer, txtRangeInfo, "" );
+        //g_PlayerFuncs.HudMessage( m_pPlayer, txtRangeInfo, "" );
 
         if( hLaserDot )
             hLaserDot.GetEntity().pev.effects |= EF_NODRAW;
@@ -392,11 +391,10 @@ final class weapon_hl2_oicw : CustomGunBase
 
     void Holster(int skiplocal = 0)
     {
-        CustomGunBase::Holster( skiplocal );
-        g_Scheduler.RemoveTimer( fnBurst );
-        
         if( hLaserDot )
             hLaserDot.GetEntity().pev.effects |= EF_NODRAW;
+
+        CustomGunBase::Holster( skiplocal );
     }
 
     void RetireWeapon()
@@ -404,7 +402,7 @@ final class weapon_hl2_oicw : CustomGunBase
         if( self.m_fInZoom )
             HipFire();
 
-        g_Scheduler.RemoveTimer( fnBurst );
+        g_Scheduler.RemoveTimer( FN_SCHED[0] );
         blGLMode = false;
 
         BaseClass.RetireWeapon();
@@ -412,10 +410,10 @@ final class weapon_hl2_oicw : CustomGunBase
 
     void UpdateOnRemove()
     {
-        g_Scheduler.RemoveTimer( fnBurst );
-
         if( hLaserDot )
             g_EntityFuncs.Remove( hLaserDot.GetEntity() );
+
+        CustomGunBase::UpdateOnRemove();
     }
 };
 

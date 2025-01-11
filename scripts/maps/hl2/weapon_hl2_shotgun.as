@@ -53,7 +53,7 @@ array<int> I_STATS_SHOTGUN =
     30,
     -1,
     6,
-    int( g_EngineFuncs.CVarGetFloat( "sk_plr_buckshot" ) ), // Damage of Primary Fire ammo
+    int( g_EngineFuncs.CVarGetFloat( "sk_plr_buckshot" ) ),// Damage of Primary Fire ammo
     0
 };
 
@@ -91,8 +91,7 @@ bool RegisterShotgun()
 final class weapon_hl2_shotgun: CustomGunBase
 {
     private bool blDoubleShot = false;
-    private CScheduledFunction @ fnEjectShell;
-
+    
     weapon_hl2_shotgun()
     {
         strSpriteDir = "hl2";
@@ -154,7 +153,7 @@ final class weapon_hl2_shotgun: CustomGunBase
         g_SoundSystem.EmitSoundDyn(m_pPlayer.edict(), CHAN_WEAPON, "hl2/shotgun_" + ( blDoubleShot ? "dbl_" : "" ) + "fire2.ogg", 1.0f, ATTN_NORM, 0, 93 + Math.RandomLong( 0, 31 ) );
         MuzzleFlash( RGBA( 255, 200, 180, 8 ) );
         Recoil( Vector( -5, 0, 0 ), blDoubleShot ? 2 : 1 );
-        @fnEjectShell = g_Scheduler.SetTimeout( this, "EjectShell", blDoubleShot ? 0.57f : 0.4f );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "EjectShell", blDoubleShot ? 0.57f : 0.4f );
 
         if( m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType) < 1 )
             m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );

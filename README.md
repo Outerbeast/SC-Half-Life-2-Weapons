@@ -14,7 +14,19 @@ Other planned features such as support for weapon customisation of models, sound
 If you find any problems, please post an issue in the project's github repository "Issues" section.
 
 ### Weapons:
-![alt text](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/blob/main/weapon_list.png?raw=true)
+- Stun Stick
+- Frag Grenade
+- Gravity Gun
+- USP Pistol
+- Alyx's Gun
+- 357 Colt Python Revolver
+- MP7 Submachine Gun
+- SPAS12 Shotgun
+- OICW Assault Rifle
+- AR2 Pulse Rifle
+- Crossbow
+- Overwatch Sniper Rifle
+- Pulse Cannon
 
 Planned weapons for a future update: 
 Annabelle (Father Grigori's rifle), Hopper Mine
@@ -38,6 +50,30 @@ Annabelle (Father Grigori's rifle), Hopper Mine
 # Installation
 
 #### Warning: using this pack along with other installed weapon packs, be it plugins or map scripts, may result in weapon slot conflicts and will cause weapons to be unselectable.
+
+## Game/Server Installation
+The weapon pack can be installed with a plugin to add to your game or server. It features a in-game menu that you can use to exchange stock weapons for the HL2 weapons.
+
+To Install the weapon pack to your game/server:-
+
+1) Download and extract the files into `svencoop_addon`
+2) Edit your `default_plugins.txt` file (found in `svencoop`) and add the following:
+
+    ```
+    "plugin"
+	{
+		"name" "HL2Weapons"
+		"script" "HL2Weapons"
+	}
+    ```
+-then save the file.
+
+Once you've installed the plugin, you can use the chat command `!hl2_weapons` to open the weapon exchange menu, which allows you to trade in a stock weapon(s) for a HL2 one. For obtaining ammunition for the weapons that use their own unique ammo types, picking up ammo for the stock weapon will add ammo to the HL2 weapon.
+
+## Map Installation
+The script will automatically replace any stock weapons from cfg/world drops/player loadout with the HL2 equivalents.
+
+To install this weapon pack to your map:-
 
 1)  Download and extract the files into `svencoop_addon`, or your own maps files
 2)  Add `map_script hl2_weapons` to your map cfg
@@ -63,16 +99,16 @@ Annabelle (Father Grigori's rifle), Hopper Mine
         HL2_WEAPONS::RegisterWeapons();
     }
     ```
-    If the map doesn't have a map script, simply create one, name it, and stick the above code into that script file, then add `map_script <your_script_name_here>` to four map's CFG file.
+    If the map doesn't have a map script, simply create one, name it, and stick the above code into that script file, then add `map_script <your_script_name_here>` to your map's CFG file.
 
 A fgd file is included `hl2_weapons.fgd` to use with a map editor to add weapons and ammunition to your levels.
 
 # Credits
 - Outerbeast: Project leader, programming
-- Garompa: Graphics (models, textures, icons, visual fx), sounds, testing, feedback
-- DNIO071: Testing, poster design
+- Garompa: Graphics (models, textures, icons, visual fx), testing, feedback
 - KernCore, H2: Support
-- SV BOY, Alekk: Testing
+- DNIO071: Poster
+- SV BOY: Testing
 
 ### Special thanks:
 - aperture_aerospace: OICW model, OICW textures

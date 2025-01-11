@@ -20,6 +20,7 @@ abstract class CustomWeaponBase : ScriptBasePlayerWeaponEntity
     protected string strSpriteDir;
     protected EHandle m_hViewModel;
     protected array<int> M_I_STATS( WpnStatIdx::iFlags + 1 );
+    protected array<CScheduledFunction@> FN_SCHED( 4 );
     array<Vector> M_VEC_VIEWMODELATTACHMENT_POS( 4 );
 
     protected CBasePlayer@ m_pPlayer
@@ -53,7 +54,7 @@ abstract class CustomWeaponBase : ScriptBasePlayerWeaponEntity
 
         return true;
     }
-    // invoke in child's Precache method
+    // Invoke in child's Precache method
     bool PrecacheContent(array<string>@ STR_MODELS, array<string>@ STR_SOUNDS, array<string>@ STR_MISC = array<string>()) final
     {
         for( uint i = 0; i < STR_MODELS.length(); i++ )
@@ -450,7 +451,19 @@ abstract class CustomGunBase : CustomWeaponBase
         self.pev.nextthink = 0.0f;
         SetThink( null );
         g_EntityFuncs.Remove( m_hViewModel.GetEntity() );
+
+        for( uint i = 0; i < FN_SCHED.length(); i++ )
+            g_Scheduler.RemoveTimer( FN_SCHED[i] );
+
         BaseClass.Holster( skiplocal );
+    }
+
+    void UpdateOnRemove()
+    {
+        for( uint i = 0; i < FN_SCHED.length(); i++ )
+            g_Scheduler.RemoveTimer( FN_SCHED[i] );
+
+        BaseClass.UpdateOnRemove();
     }
 };
 // Baseclass for ammo

@@ -82,8 +82,6 @@ bool RegisterPistol()
 
 final class weapon_hl2_pistol : CustomGunBase
 {
-    private CScheduledFunction@ fnBurst;
-
     weapon_hl2_pistol()
     {
         strSpriteDir = "hl2";
@@ -164,7 +162,7 @@ final class weapon_hl2_pistol : CustomGunBase
         }
 
         Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_10DEGREES ), self.BulletAccuracy( VECTOR_CONE_8DEGREES, VECTOR_CONE_4DEGREES, VECTOR_CONE_3DEGREES ), BULLET_PLAYER_9MM );
-        @fnBurst = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
     }
 
     void PrimaryAttack()
@@ -221,12 +219,6 @@ final class weapon_hl2_pistol : CustomGunBase
         
         if( self.DefaultReload( self.iMaxClip(), AnimReload, FL_ANIMTIME_PISTOL[AnimReload], 0 ) )
             g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_ITEM, "hl2/pistol_reload1.ogg", 1.0, ATTN_NORM, 0, PITCH_NORM );
-    }
-
-    void Holster(int skiplocal)
-    {
-        self.m_fInReload = false;
-        BaseClass.Holster( skiplocal );
     }
 };
 

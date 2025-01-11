@@ -131,7 +131,7 @@ final class weapon_hl2_crossbow : CustomGunBase
         Recoil( Vector( Math.RandomLong( -2, -1 ), 0, 0 ) );
 
         if( --self.m_iClip < 1 && m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) < 1 )
-			m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
+            m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
     }
 
     void AimDownSights(const int iZoomFov)
@@ -141,7 +141,7 @@ final class weapon_hl2_crossbow : CustomGunBase
 
         m_pPlayer.set_m_szAnimExtension( "bowscope" );
         m_pPlayer.pev.viewmodel = "models/hl2/scope_xbow.mdl";
-        //m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
         CustomGunBase::AimDownSights( iZoomFov );
     }
 
@@ -149,7 +149,7 @@ final class weapon_hl2_crossbow : CustomGunBase
     {
         m_pPlayer.set_m_szAnimExtension( "bow" );
         m_pPlayer.pev.viewmodel = self.GetV_Model( "models/hl2/v_crossbow.mdl" );
-        //m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
         CustomGunBase::HipFire();
     }
 

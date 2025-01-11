@@ -98,7 +98,8 @@ final class weapon_hl2_gravgun : CustomGunBase
 {
     private ANIM_GRAVGUN AnimGrabReady = ANIM_GRAVGUN( -1 );
     private EHandle m_hTarget, m_hCarried, m_hPull, m_hFlung, m_hPotentialVictim;
-    private CScheduledFunction@ fnAnimation;
+    
+    void Reload() { };
 
     weapon_hl2_gravgun()
     {
@@ -363,7 +364,7 @@ final class weapon_hl2_gravgun : CustomGunBase
         @pCarried.pev.owner = null;
         m_hCarried = EHandle();
         g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/physcannon_drop.ogg", 0.9f, ATTN_NORM, 0, PITCH_NORM );
-        @fnAnimation = g_Scheduler.SetTimeout( @self, "SendWeaponAnim", 0.1f, int( ANIM_GRAVGUN::OPEN_TO_CLOSED ), 0, 0 );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( @self, "SendWeaponAnim", 0.1f, int( ANIM_GRAVGUN::OPEN_TO_CLOSED ), 0, 0 );
         self.m_flTimeWeaponIdle = g_Engine.time + FL_ANIMTIME_GRAVGUN[ANIM_GRAVGUN::OPEN_TO_CLOSED];
         // Sound is not stopping!
         //g_SoundSystem.StopSound( m_pPlayer.edict(), CHAN_WEAPON, "hl2/superphys_hold_loop.ogg" ); // Doesn't work. Have to do this a frame later
@@ -376,8 +377,7 @@ final class weapon_hl2_gravgun : CustomGunBase
         if( strSound == "" )
             return;
 
-        edict_t@ eEmitter = hEmitter ? hEmitter.GetEntity().edict() : null;
-        g_SoundSystem.StopSound( eEmitter, SOUND_CHANNEL( channel ), strSound );
+        g_SoundSystem.StopSound( hEmitter ? hEmitter.GetEntity().edict() : null, SOUND_CHANNEL( channel ), strSound );
     }
 
     HookReturnCode CarryObjectCollected(CBaseEntity@ pPickup, CBaseEntity@ pOther)
@@ -386,10 +386,7 @@ final class weapon_hl2_gravgun : CustomGunBase
             return HOOK_CONTINUE;
 
         if( pPickup is m_hCarried.GetEntity() && pOther is m_pPlayer )
-        {
             Drop();
-            //pPickup.OnSetOriginByMap(); // 5.26 feature
-        }
 
         return HOOK_CONTINUE;
     }
@@ -423,7 +420,7 @@ final class weapon_hl2_gravgun : CustomGunBase
                 pFlung.pev.dmg :
                 pFlung.pev.size.x * pFlung.pev.size.y * pFlung.pev.size.z * 0.01f;
 
-            if( pFlung.Intersects( m_hPotentialVictim.GetEntity() ) )
+            if( pFlung.Intersects( pVictim ) )
             {
                 pVictim.TakeDamage( pFlung.pev, m_pPlayer.pev, flDamage, DMG_CLUB | DMG_LAUNCH );
                 pFlung.pev.velocity.x = pFlung.pev.velocity.y = 0;
@@ -486,7 +483,7 @@ final class weapon_hl2_gravgun : CustomGunBase
 
                     m_hPull = cast<CItem@>( pTarget ) !is null ? m_hTarget : EHandle();
                     self.SendWeaponAnim( ANIM_GRAVGUN::CLOSED_PULL );
-                    @fnAnimation = g_Scheduler.SetTimeout( @self, "SendWeaponAnim", FL_ANIMTIME_GRAVGUN[ANIM_GRAVGUN::CLOSED_PULL], int( ANIM_GRAVGUN::CLOSED_IDLE ), 0, 0 );
+                    @FN_SCHED[0] = g_Scheduler.SetTimeout( @self, "SendWeaponAnim", FL_ANIMTIME_GRAVGUN[ANIM_GRAVGUN::CLOSED_PULL], int( ANIM_GRAVGUN::CLOSED_IDLE ), 0, 0 );
                     g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/physcannon_tooheavy.ogg", 0.9f, ATTN_NORM, 0, PITCH_NORM );
                 }
                 else
@@ -503,24 +500,20 @@ final class weapon_hl2_gravgun : CustomGunBase
         self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_GRAVGUN[ANIM_GRAVGUN::CLOSED_PULL];
     }
 
-    void Reload() { }
-
     void Holster(int skiplocal)
     {
         if( m_hCarried )
             Drop();
 
-        g_Scheduler.RemoveTimer( fnAnimation );
         g_Hooks.RemoveHook( Hooks::PickupObject::Collected, CollectedHook( this.CarryObjectCollected ) );
         m_hTarget = m_hCarried = m_hFlung = m_hPotentialVictim = EHandle();
         CustomGunBase::Holster( skiplocal );
-        BaseClass.Holster( skiplocal );
     }
 
     void UpdateOnRemove()
     {
-        g_Scheduler.RemoveTimer( fnAnimation );
         g_Hooks.RemoveHook( Hooks::PickupObject::Collected, CollectedHook( this.CarryObjectCollected ) );
+        CustomGunBase::UpdateOnRemove();
     }
 };
 

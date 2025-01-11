@@ -199,11 +199,9 @@ final class weapon_hl2_alyxgun : CustomGunBase
 
     void Holster(int skiplocal)
     {
-        SetThink( null );
+        CustomGunBase::Holster( skiplocal );
         self.m_fInReload = self.m_fIsAkimbo = false;
         self.LoadSprites( m_pPlayer, self.GetClassname() );
-
-        BaseClass.Holster( skiplocal );
     }
 };
 

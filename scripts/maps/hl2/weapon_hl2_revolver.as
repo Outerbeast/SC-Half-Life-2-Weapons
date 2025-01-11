@@ -76,8 +76,6 @@ bool RegisterRevolver()
 
 final class weapon_hl2_revolver : CustomGunBase
 {
-    private CScheduledFunction@ fnEjectCasings;
-    
     weapon_hl2_revolver()
     {
         strSpriteDir = "hl2";
@@ -129,7 +127,7 @@ final class weapon_hl2_revolver : CustomGunBase
     void AimDownSights(const int iZoomFov)
     {
         self.SendWeaponAnim( ANIM_REVOLVER::ADS_TO );
-        //m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
         CustomGunBase::AimDownSights( iZoomFov );
         self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_REVOLVER[ANIM_REVOLVER::ADS_TO];
     }
@@ -137,7 +135,7 @@ final class weapon_hl2_revolver : CustomGunBase
     void HipFire()
     {
         self.SendWeaponAnim( ANIM_REVOLVER::ADS_FROM );
-        //m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
         CustomGunBase::HipFire();
         self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_REVOLVER[ANIM_REVOLVER::ADS_FROM];
     }
@@ -201,16 +199,10 @@ final class weapon_hl2_revolver : CustomGunBase
         
         if( self.DefaultReload( self.iMaxClip(), ANIM_REVOLVER::RELOAD, FL_ANIMTIME_REVOLVER[ANIM_REVOLVER::RELOAD], 0 ) )
         {
-            @fnEjectCasings = g_Scheduler.SetTimeout( this, "DropCasings", 1.3f );
+            @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "DropCasings", 1.3f );
             SetThink( null );
             self.pev.nextthink = 0.0f;
         }
-    }
-
-    void Holster(int skiplocal = 0)
-    {
-        g_Scheduler.RemoveTimer( fnEjectCasings );
-        CustomGunBase::Holster( skiplocal );
     }
 };
 

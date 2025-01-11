@@ -155,7 +155,7 @@ final class weapon_hl2_smg : CustomGunBase
     void AimDownSights(const int iZoomFov)
     {
         self.SendWeaponAnim( ANIM_SMG::ADS_TO );
-        //m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD |= HIDEHUD_CROSSHAIR;
         CustomGunBase::AimDownSights( iZoomFov );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = g_Engine.time + FL_ANIMTIME_SMG[ANIM_SMG::ADS_TO];
     }
@@ -163,7 +163,7 @@ final class weapon_hl2_smg : CustomGunBase
     void HipFire()
     {
         self.SendWeaponAnim( ANIM_SMG::ADS_FROM );
-        //m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
+        m_pPlayer.m_iHideHUD &= ~HIDEHUD_CROSSHAIR;
         CustomGunBase::HipFire();
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = g_Engine.time + FL_ANIMTIME_SMG[ANIM_SMG::ADS_FROM];
     }

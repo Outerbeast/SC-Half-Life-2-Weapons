@@ -1,17 +1,22 @@
 /* SC Half-Life 2 Weapons Pack
-    Half-Life 2 weapons brough to Sven Co-op
+    Half-Life 2 weapons brought to Sven Co-op
 
-1)  Download and extract the files into `svencoop_addon`, or your own maps files
-2)  Add `map_script hl2_weapons` to your map cfg
+This is the map script for installing the weapons for your map.
+The script will automatically replace any stock weapons from cfg/world drops/player loadout with the HL2 equivalents.
+
+Install instructions:-
+
+1)  Download and extract the files into "svencoop_addon", or your own maps files
+2)  Add "map_script hl2_weapons" to your map cfg
     OR
-    Add a trigger_script entity to your map with the key `"m_iszScriptFile"` set to `"hl2_weapons"`
+    Add a trigger_script entity to your map with the key "m_iszScriptFile" set to "hl2_weapons"
     OR
-    If you have a main map script, add an `#include` for this script in your main map script header.
+    If you have a main map script, add an "#include" for this script in your main map script header.
 
 3)  You need to register the weapons. Either:
-    Add the entity `info_register_hl2weapons` to your map
+    Add the entity "info_register_hl2weapons" to your map
     OR
-    Execute `HL2_WEAPONS::RegisterWeapons()` in MapInit of the main map script:
+    Execute `HL2_WEAPONS::RegisterWeapons()` in "MapInit" of the main map script:
 
     void MapInit()
     {
@@ -19,6 +24,7 @@
     }
 
     If the map doesn't have a map script, simply create one, name it, and stick the above code into that script file, then add `map_script <your_script_name_here>` to four map's CFG file.
+    A fgd file is included "hl2_weapons.fgd" to use with a map editor to add weapons and ammunition to your levels.
 
 Credits:
 - Outerbeast: Project lead, programming
