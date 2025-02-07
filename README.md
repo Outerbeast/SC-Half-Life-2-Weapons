@@ -14,19 +14,7 @@ Other planned features such as support for weapon customisation of models, sound
 If you find any problems, please post an issue in the project's github repository "Issues" section.
 
 ### Weapons:
-- Stun Stick
-- Frag Grenade
-- Gravity Gun
-- USP Pistol
-- Alyx's Gun
-- 357 Colt Python Revolver
-- MP7 Submachine Gun
-- SPAS12 Shotgun
-- OICW Assault Rifle
-- AR2 Pulse Rifle
-- Crossbow
-- Overwatch Sniper Rifle
-- Pulse Cannon
+![alt text](https://github.com/Outerbeast/SC-Half-Life-2-Weapons/blob/main/weapon_list.png?raw=true)
 
 Planned weapons for a future update: 
 Annabelle (Father Grigori's rifle), Hopper Mine
