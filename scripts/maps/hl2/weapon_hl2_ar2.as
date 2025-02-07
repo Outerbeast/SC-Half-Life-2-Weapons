@@ -81,8 +81,7 @@ array<string>
         "models/hl2/disintegration_fx.mdl",
         "sprites/hl2/weapon_hl2_ar2.spr",
         "sprites/hl2/ar2_muzzleflash.spr",
-        "sprites/hl2/hl2ammo.spr",
-        "sprites/laserbeam.spr"
+        "sprites/hl2/hl2ammo.spr"
     },
     STR_AR2_SOUNDS =
     {
@@ -353,7 +352,10 @@ final class ammo_hl2_ar2_altfire : CustomAmmoBase
 
 final class ar2_energy_ball : ScriptBaseAnimating
 {
-    private uint iBounceLimit = 10;
+    private uint 
+        iBounceLimit = 10,
+        iShockwaveSprite = g_Game.PrecacheModel( "sprites/laserbeam.spr" );
+
     private float flLifeTime = 30.0f;
     private CScheduledFunction@ fnApplyTargetMagnetism, fnCheckStuck;
 
@@ -593,7 +595,7 @@ final class ar2_energy_ball : ScriptBaseAnimating
             shockwave.WriteCoord( self.pev.origin.y );
             shockwave.WriteCoord( self.pev.origin.z + 196 );
 
-            shockwave.WriteShort( g_EngineFuncs.ModelIndex( "sprites/laserbeam.spr" ) );
+            shockwave.WriteShort( iShockwaveSprite );
 
             shockwave.WriteByte( 0 );// start frame
             shockwave.WriteByte( 16 );// fps

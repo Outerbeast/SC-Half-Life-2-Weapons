@@ -43,8 +43,7 @@ array<string>
         "models/hl2/p_grenade.mdl",
         "models/hl2/w_grenade.mdl",
         "sprites/hl2/weapon_hl2_frag.spr",
-        "sprites/hl2/hl2ammo.spr",
-        "sprites/laserbeam.spr"
+        "sprites/hl2/hl2ammo.spr"
     },
     STR_FRAG_SOUNDS = { "hl2/grenade_tick1.ogg" };
 
@@ -52,6 +51,7 @@ array<float> FL_NEXT_TOSS( g_Engine.maxClients + 1 );
 array<EHandle> H_THROWN_GRENADES;
 
 const string strWeapon_Frag = "weapon_hl2_frag";
+const int iFuseSprite = g_Game.PrecacheModel( "sprites/laserbeam.spr" );
 
 bool RegisterFrag()
 {
@@ -72,10 +72,7 @@ void Precache()
         g_Game.PrecacheModel( STR_FRAG_MODELS[i] );
 
     for( uint i = 0; i < STR_FRAG_SOUNDS.length(); i++ )
-    {
         g_SoundSystem.PrecacheSound( STR_FRAG_SOUNDS[i] );
-        g_Game.PrecacheGeneric( "sound/" + STR_FRAG_SOUNDS[i] );
-    }
 
     g_Game.PrecacheGeneric( "sprites/hl2/weapon_handgrenade.txt" );
 }
@@ -211,7 +208,7 @@ void StartFuse(EHandle hGrenade)
     NetworkMessage trail( MSG_BROADCAST, NetworkMessages::SVC_TEMPENTITY, null );
         trail.WriteByte( TE_BEAMFOLLOW );
         trail.WriteShort( hGrenade.GetEntity().entindex() + 0x1000 * ( iAttachmentPoint + 1 ) ); 
-        trail.WriteShort( g_EngineFuncs.ModelIndex( "sprites/laserbeam.spr" ) );
+        trail.WriteShort( iFuseSprite );
         trail.WriteByte( 5 ); //life
         trail.WriteByte( 1 ); //width
         trail.WriteByte( RGBA_RED.r );
