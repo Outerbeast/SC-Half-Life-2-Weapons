@@ -56,7 +56,24 @@ To Install the weapon pack to your game/server:-
     ```
 -then save the file.
 
-Once you've installed the plugin, you can use the chat command `!hl2_weapons` to open the weapon exchange menu, which allows you to trade in a stock weapon(s) for a HL2 one. For obtaining ammunition for the weapons that use their own unique ammo types, picking up ammo for the stock weapon will add ammo to the HL2 weapon.
+### How to equip the weapons
+
+Once you've installed the plugin, you can use the Weapon and Ammo exchange menus which will give you several options for trading in stock weapon(s) and ammunition for HL2 equivalent weapons and ammunition. Most HL2 weapons use stock ammunition, but a few use their own ammo types.
+
+To open the exchange menus, you can use the follow chat commands:
+
+- `!hl2_weapons` opens the weapon exchange menu. Adding a weapon name after the command lets you exchange for the weapon directly without needing to use the menu.
+
+Example:
+```!hl2_weapons ar2```
+
+- `!hl2_ammo` opens the ammo exchange menu. Adding an ammo name after the command lets you exchange for the ammo directly, by default one magazine is given. You can purchase multiple copies of the ammo, just add the quantity after the ammo name.
+
+Example:
+```!hl2_ammo ar2_altfire 2```
+
+### Blacklisting maps
+There is the option to disable HL2 weapons being available when certain maps are running by adding those map BSP names to the blacklist file `hl2_weapons_mapblacklist.txt` which is located in `scripts/plugins/store`. An example file is included explaining its usage.
 
 ## Map Installation
 The script will automatically replace any stock weapons from cfg/world drops/player loadout with the HL2 equivalents.

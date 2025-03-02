@@ -62,17 +62,18 @@ array<WeaponExchangeOption> EXCH_MENU_WEAPONS =
     WeaponExchangeOption( "Gravity Gun: Displacer",     "displacer",    "gravgun" ),
     WeaponExchangeOption( "MK3A2 Frag: Hand Grenade",   "handgrenade",  "frag" ),
 };
-// this is pure cancer
-dictionary dictAmmoMappings = 
+
+array<AmmoExchangeOption> EXCH_MENU_AMMO =
 {
-    { "ammo_556",           AmmoPickupMapping( "weapon_hl2_ar2", "ammo_hl2_ar2" ) },
-    { "ammo_gaussclip",     AmmoPickupMapping( "weapon_hl2_ar2", "ammo_hl2_ar2_altfire", true ) },
-    { "ammo_762",           AmmoPickupMapping( "weapon_hl2_sniperrifle", "ammo_hl2_sniperrifle" ) },
-    { "ammo_ARgrenades",    AmmoPickupMapping( "weapon_hl2_oicw", "ammo_hl2_oicw_grenades", true ) },
-    { "ammo_crossbow",      AmmoPickupMapping( "weapon_hl2_crossbow", "ammo_hl2_crossbow" ) }
+    //AmmoExchangeOption( "Option Description", "hl2 weapon name", "ammo type name", "hl2weapon ammo name", "cost", "quantity", "secondary ammo type?" ),
+    AmmoExchangeOption( "AR2 Clip: 556 x30",              "ar2",        "556",          "ar2",          30, 1 ),
+    AmmoExchangeOption( "AR2 Energy: AR Grenade x2",      "ar2",        "ARgrenades",   "ar2_altfire",  2, 1, true ),
+    AmmoExchangeOption( "OICW Grenade Clip: AR Grenade",  "oicw",       "ARgrenades",   "oicw_grenade", 1, 2, true ),
+    AmmoExchangeOption( "Overwatch SR Clip: 762",       "sniperrifle",  "m40a1",        "sniperrifle", 1, 1 ),
+    AmmoExchangeOption( "Bolt Crossbow: Crossbow Darts", "crossbow",    "bolts",        "crossbow",     1, 1 )
 };
 
-CTextMenu@ menuWeaponExchange;
+CTextMenu@ menuWeaponExchange, menuAmmoExchange;
 bool blHL2WeaponsRegistered;
 
 void PluginInit()
@@ -80,8 +81,10 @@ void PluginInit()
     g_Module.ScriptInfo.SetAuthor( "Outerbeast" );
 	g_Module.ScriptInfo.SetContactInfo( "https://github.com/Outerbeast/SC-Half-Life-2-Weapons/tree/main" );
 
-    @menuWeaponExchange = CTextMenu( ExchangeWeapons );
+    @menuWeaponExchange = CTextMenu( OptionSelected );
+    @menuAmmoExchange = CTextMenu( OptionSelected );
     menuWeaponExchange.SetTitle( "HL2 Weapon Exchange " );
+    menuAmmoExchange.SetTitle( "HL2 Ammo Exchange " );
 
     for( uint i = 0; i < EXCH_MENU_WEAPONS.length(); i++ )
     {
@@ -91,15 +94,26 @@ void PluginInit()
         menuWeaponExchange.AddItem( EXCH_MENU_WEAPONS[i].m_strDescription, any( EXCH_MENU_WEAPONS[i] ) );
     }
 
-    if( menuWeaponExchange.Register() )
+    for( uint i = 0; i < EXCH_MENU_AMMO.length(); i++ )
     {
-        g_Hooks.RegisterHook( Hooks::Player::ClientSay, PlayerOpenMenu );
-        g_Hooks.RegisterHook( Hooks::PickupObject::Collected, CollectHL2Ammo );
+        if( EXCH_MENU_AMMO[i].m_strDescription == "" )
+            continue;
+
+        menuAmmoExchange.AddItem( EXCH_MENU_AMMO[i].m_strDescription, any( EXCH_MENU_AMMO[i] ) );
     }
+
+    if( menuWeaponExchange.Register() && menuAmmoExchange.Register() )
+        g_Hooks.RegisterHook( Hooks::Player::ClientSay, PlayerOpenMenu );
 }
 
 void MapInit()
 {
+    if( MapIsBlackListed() )
+    {
+        blHL2WeaponsRegistered = false;
+        return;
+    }
+
     blHL2WeaponsRegistered =
         HL2_WEAPONS::RegisterStunStick() &&
         HL2_WEAPONS::RegisterGravGun() &&
@@ -116,13 +130,33 @@ void MapInit()
         HL2_WEAPONS::RegisterFrag();
 }
 
-void ExchangeWeapons(CTextMenu@ menu, CBasePlayer@ pPlayer, int iSlot, const CTextMenuItem@ pWeapon)
+bool MapIsBlackListed()
 {
-    if( pPlayer is null || pWeapon is null || pWeapon.m_pUserData is null )
-        return;
+    File@ fileBlackList = g_FileSystem.OpenFile( "scripts/plugins/store/hl2_weapons_mapblacklist.txt", OpenFile::READ );
 
-    WeaponExchangeOption chosen;
-    pWeapon.m_pUserData.retrieve( chosen );
+    if( fileBlackList is null || !fileBlackList.IsOpen() )
+        return false;
+
+    bool blBlackListedMapFound = false;
+
+    while( !fileBlackList.EOFReached() && !blBlackListedMapFound )
+    {
+        string strCurrentLine;
+        fileBlackList.ReadLine( strCurrentLine );
+
+        if( strCurrentLine == "" || strCurrentLine.StartsWith( "#" ) )
+            continue;
+
+        blBlackListedMapFound = string( g_Engine.mapname ).StartsWith( strCurrentLine );
+    }
+
+    return blBlackListedMapFound;
+}
+
+void ExchangeWeapons(CBasePlayer@ pPlayer, WeaponExchangeOption@ chosen)
+{
+    if( pPlayer is null || chosen is null )
+        return;
 
     if( pPlayer.HasNamedPlayerItem( "weapon_hl2_" + chosen.m_strItem ) !is null )
     {
@@ -143,40 +177,65 @@ void ExchangeWeapons(CTextMenu@ menu, CBasePlayer@ pPlayer, int iSlot, const CTe
 
     for( uint i = 0; i < chosen.M_STR_REQUIRED.length(); i++ )
         BL_SHOULD_EXCHANGE[i] = pPlayer.RemovePlayerItem( pPlayer.HasNamedPlayerItem( "weapon_" + chosen.M_STR_REQUIRED[i] ) );
-
-/*     if( BL_SHOULD_EXCHANGE.find( false ) >= 0 )
-        return; */
-
+    // Give player weapon and switch to it
     pPlayer.GiveNamedItem( "weapon_hl2_" + chosen.m_strItem, 0, 0 );
 
     if( pPlayer.SwitchWeapon( pPlayer.HasNamedPlayerItem( "weapon_hl2_" + chosen.m_strItem ) ) )
-        g_PlayerFuncs.ClientPrintAll( HUD_PRINTNOTIFY, "" + pPlayer.pev.netname + " acquired " + chosen.m_strItem + ".\n" );
+        g_PlayerFuncs.ClientPrintAll( HUD_PRINTNOTIFY, "" + pPlayer.pev.netname + " acquired '" + chosen.m_strItem + "'.\n" );
 }
 
-HookReturnCode CollectHL2Ammo(CBaseEntity@ pPickup, CBaseEntity@ pOther)
+int ExchangeAmmo(CBasePlayer@ pPlayer, AmmoExchangeOption@ chosen)
 {
-    if( pOther is null || !pOther.IsPlayer() || pPickup is null || !dictAmmoMappings.exists( pPickup.GetClassname() ) )
-        return HOOK_CONTINUE;
+    if( pPlayer is null || chosen is null )
+        return -1;
 
-    CBasePlayer@ pPlayer = cast<CBasePlayer@>( pOther );
-
-    if( pPlayer is null )
-        return HOOK_CONTINUE;
-
-    AmmoPickupMapping ammo = cast<AmmoPickupMapping>( dictAmmoMappings[pPickup.GetClassname()] );
-    CBasePlayerWeapon@ pWeapon = pPlayer.HasNamedPlayerItem( ammo.m_strWeapon ).GetWeaponPtr();
+    CBasePlayerWeapon@ pWeapon = cast<CBasePlayerWeapon@>( pPlayer.HasNamedPlayerItem( "weapon_hl2_" + chosen.m_strWeapon ) );
 
     if( pWeapon is null )
-        return HOOK_CONTINUE;
+    {
+        g_PlayerFuncs.SayText( pPlayer, "You don't have the weapon '" + chosen.m_strWeapon + "' to buy ammo for.\nPurchase the weapon first.\n" );
+        return -1;
+    }
 
-    const int
-        mag = ammo.m_blSecondaryAmmo ? pPlayer.m_rgAmmo( pWeapon.SecondaryAmmoIndex() ) : pWeapon.iMaxClip(),
-        max = ammo.m_blSecondaryAmmo ? pWeapon.iMaxAmmo2() : pWeapon.iMaxAmmo1();
+    const int iAmmoType = g_PlayerFuncs.GetAmmoIndex( chosen.m_strAmmo );
 
-    //pWeapon.AddPrimaryAmmo( mag, ammo.m_strNewAmmo, mag, max );
-    pPlayer.GiveAmmo( mag, ammo.m_strNewAmmo, max );
+    if( iAmmoType < 0 )
+        return -1;
 
-    return HOOK_CONTINUE;
+    if( pPlayer.m_rgAmmo( iAmmoType ) < chosen.m_iCost )
+    {
+        g_PlayerFuncs.SayText( pPlayer, "You don't have enough ammo to trade for '" + chosen.m_strItem + "'. Required is " + chosen.m_iCost + " " + chosen.m_strAmmo + "s.\n" );
+        return -1;
+    }
+    // Give the player a magazine(s)
+    int iAmmoAdded = 
+        chosen.m_blSecondaryAmmo ? 
+        pWeapon.AddSecondaryAmmo( chosen.m_iQuantity, "ammo_hl2_" + chosen.m_strItem, pWeapon.iMaxAmmo2() ) :
+        pWeapon.AddPrimaryAmmo( pWeapon.iMaxClip() * chosen.m_iQuantity, "ammo_hl2_" + chosen.m_strItem, pWeapon.iMaxClip(), pWeapon.iMaxAmmo1() );
+
+    if( iAmmoAdded > 0 )
+        pPlayer.m_rgAmmo( iAmmoType, pPlayer.m_rgAmmo( iAmmoType ) - chosen.m_iCost * chosen.m_iQuantity );
+
+    return iAmmoAdded;
+}
+
+void OptionSelected(CTextMenu@ menu, CBasePlayer@ pPlayer, int iSlot, const CTextMenuItem@ option)
+{
+    if( pPlayer is null || menu is null || option is null )
+        return;
+
+    if( menu is menuWeaponExchange )
+    {
+        WeaponExchangeOption weapon_choice;
+        option.m_pUserData.retrieve( weapon_choice );
+        ExchangeWeapons( pPlayer, @weapon_choice );
+    }
+    else if( menu is menuAmmoExchange )
+    {
+        AmmoExchangeOption ammo_choice;
+        option.m_pUserData.retrieve( ammo_choice );
+        ExchangeAmmo( pPlayer, @ammo_choice );
+    }
 }
 
 HookReturnCode PlayerOpenMenu(SayParameters@ pParams)
@@ -190,12 +249,61 @@ HookReturnCode PlayerOpenMenu(SayParameters@ pParams)
     if( cmdArgs.ArgC() < 1 || pPlayer is null || !pPlayer.IsConnected() )
         return HOOK_CONTINUE;
 
+    if( cmdArgs[0].StartsWith( "!hl2_" ) && MapIsBlackListed() )
+    {
+        g_PlayerFuncs.SayText( pPlayer, "HL2 Weapons are not available on this map '" + g_Engine.mapname + "'.\n" );
+        return HOOK_CONTINUE;
+    }
+
+    bool blOptionValid = false;
+
     if( cmdArgs[0] == "!hl2_weapons" )
     {
-        pParams.set_ShouldHide( true );
-        menuWeaponExchange.Open( 15, 0, pPlayer );
+        if( cmdArgs[1] != "" )
+        {
+            for( uint i = 0; i < EXCH_MENU_WEAPONS.length() && !blOptionValid; i++ )
+            {
+                if( cmdArgs[1].EndsWith( EXCH_MENU_WEAPONS[i].m_strItem ) )
+                {
+                    ExchangeWeapons( pPlayer, EXCH_MENU_WEAPONS[i] );
+                    blOptionValid = true;
+                }
+            }
+
+            if( !blOptionValid )
+                g_PlayerFuncs.SayText( pPlayer, "Weapon '" + cmdArgs[1] + "' doesn't exist.\nCheck the weapon exchange menu to see options.\n" );
+        }
+        else
+            menuWeaponExchange.Open( 15, 0, pPlayer );
     }
-        
+
+    if( cmdArgs[0] == "!hl2_ammo" )
+    {
+        if( cmdArgs[1] != "" )
+        {
+            for( uint i = 0; i < EXCH_MENU_AMMO.length() && !blOptionValid; i++ )
+            {
+                AmmoExchangeOption choice_cmd = EXCH_MENU_AMMO[i];
+
+                if( cmdArgs[1].EndsWith( choice_cmd.m_strItem ) )
+                {
+                    if( atoui( cmdArgs[2] ) > 0 )
+                        choice_cmd.m_iQuantity = atoui( cmdArgs[2] );
+
+                    ExchangeAmmo( pPlayer, choice_cmd );
+                    blOptionValid = true;
+                }
+            }
+
+            if( !blOptionValid )
+                g_PlayerFuncs.SayText( pPlayer, "Ammo '" + cmdArgs[1] + "' doesn't exist.\nCheck the ammo exchange menu to see options.\n" );
+        }
+        else
+            menuAmmoExchange.Open( 15, 0, pPlayer );
+    }
+
+    pParams.set_ShouldHide( blOptionValid );
+
     return HOOK_CONTINUE;
 }
 
@@ -206,42 +314,46 @@ final class WeaponExchangeOption
 
     WeaponExchangeOption() { };// Otherwise the compiler throws a fit and halts
 
-    WeaponExchangeOption(string strDescription, const string& in required, const string& in item)
+    WeaponExchangeOption(string& in Description, const string& in required, const string& in Item)
     {
-        this.m_strDescription = strDescription;
+        this.m_strDescription = Description;
         this.M_STR_REQUIRED.insertLast( required );
-        this.m_strItem = item; 
+        this.m_strItem = Item; 
     }
 
-    WeaponExchangeOption(string strDescription, const array<string>@ REQUIRED, const string& in item)
+    WeaponExchangeOption(string& in Description, const array<string>@ REQUIRED, const string& in Item)
     {
-        this.m_strDescription = strDescription;
+        this.m_strDescription = Description;
         this.M_STR_REQUIRED = REQUIRED;
-        this.m_strItem = item; 
+        this.m_strItem = Item; 
     }
 };
 
-final class AmmoPickupMapping
+final class AmmoExchangeOption
 {
-    string
-        m_strOriginalAmmo,
-        m_strWeapon,
-        m_strNewAmmo;
-
+    string m_strDescription, m_strWeapon, m_strItem, m_strAmmo;
+    uint m_iCost, m_iQuantity = 1;
     bool m_blSecondaryAmmo;
 
-    AmmoPickupMapping() { };
+    AmmoExchangeOption() { };
 
-    AmmoPickupMapping(const string& in Weapon, const string& in NewAmmo)
+    AmmoExchangeOption
+    (
+        string& in Description,
+        string& in Weapon, 
+        string& in Ammo,
+        string& in Item,
+        uint Cost, 
+        uint Quantity = 1, 
+        bool SecondaryAmmo = false
+    )
     {
-        m_strWeapon = Weapon;
-        m_strNewAmmo = NewAmmo;
-    }
-
-    AmmoPickupMapping(const string& in Weapon, const string& in NewAmmo, bool SecondaryAmmo)
-    {
-        m_strWeapon = Weapon;
-        m_strNewAmmo = NewAmmo;
-        m_blSecondaryAmmo = SecondaryAmmo;
+        this.m_strDescription = Description;
+        this.m_strWeapon = Weapon;
+        this.m_strAmmo = Ammo;
+        this.m_strItem = Item;
+        this.m_iCost = Cost;
+        this.m_iQuantity = Quantity;
+        this.m_blSecondaryAmmo = SecondaryAmmo; 
     }
 };
