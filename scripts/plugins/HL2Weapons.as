@@ -107,8 +107,6 @@ void PluginInit()
 
     if( menuWeaponExchange.Register() && menuAmmoExchange.Register() )
         g_Hooks.RegisterHook( Hooks::Player::ClientSay, PlayerOpenMenu );
-
-    countPluginInitExec++;
 }
 
 void MapInit()
