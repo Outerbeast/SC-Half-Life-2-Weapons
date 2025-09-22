@@ -44,17 +44,14 @@ array<int> I_STATS_ALYXGUN =
     1,//iSlot,
     6,//iPosition,
     300,//iMaxAmmo1,
-    -1,//iMaxAmmo2,
+    WEAPON_NOCLIP,//iMaxAmmo2,
     20//iMaxClip,
 };
 
 array<string>
     STR_ALYXGUN_MODELS =
     {
-        "models/hl2/w_alyxgun.mdl",
-        "models/hl2/p_alyxgun.mdl",
         "models/hl2/p_alyxgun_auto.mdl",
-        "models/hl2/v_alyxgun.mdl",
         "sprites/hl2/weapon_hl2_alyxgun.spr"
     },
     STR_ALYXGUN_SOUNDS =
@@ -81,6 +78,9 @@ final class weapon_hl2_alyxgun : CustomGunBase
 {
     weapon_hl2_alyxgun()
     {
+        strModel_V = "models/hl2/v_alyxgun.mdl";
+        strModel_P = "models/hl2/p_alyxgun.mdl";
+        strModel_W = "models/hl2/w_alyxgun.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_ALYXGUN;
     }
@@ -94,7 +94,7 @@ final class weapon_hl2_alyxgun : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_alyxgun.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 2 );
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 2 );
         self.m_fIsAkimbo = false;
         BaseClass.Spawn();
     }
@@ -102,7 +102,7 @@ final class weapon_hl2_alyxgun : CustomGunBase
     bool Deploy()
     {
         const ANIM_ALYXGUN AnimDeploy = self.m_fIsAkimbo ? ANIM_ALYXGUN::SMG_DRAW : ANIM_ALYXGUN::PISTOL_DRAW;
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_alyxgun.mdl" ), self.GetP_Model( "models/hl2/p_alyxgun.mdl" ), AnimDeploy, "onehanded" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), AnimDeploy, "onehanded" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_ALYXGUN[AnimDeploy];
 
         return blDeployed;

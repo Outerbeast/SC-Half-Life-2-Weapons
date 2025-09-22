@@ -40,16 +40,13 @@ array<int> I_STATS_XBOW =
     3,//iSlot,
     7,//iPosition,
     10,//iMaxAmmo1,
-    -1,//iMaxAmmo2,
+    WEAPON_NOCLIP,//iMaxAmmo2,
     1//iMaxClip,
 };
 
 array<string>
     STR_XBOW_MODELS =
     {
-        "models/hl2/p_crossbow.mdl",
-        "models/hl2/v_crossbow.mdl",
-        "models/hl2/w_crossbow.mdl",
         "models/hl2/w_crossbow_clip.mdl",
         "models/hl2/crossbow_bolt.mdl",
         "models/hl2/scope_xbow.mdl",
@@ -63,7 +60,7 @@ array<string>
         "hl2/bolt_load2.ogg"
     };
 
-const float flXbowBoltSpeed = 1250.0f;
+const float flXbowBoltSpeed = 2000.0f;
 const string
     strWeapon_XBow = "weapon_hl2_crossbow",
     strAmmo_XBow = "ammo_hl2_crossbow";
@@ -84,6 +81,9 @@ final class weapon_hl2_crossbow : CustomGunBase
 {
     weapon_hl2_crossbow()
     {
+        strModel_V = "models/hl2/v_crossbow.mdl";
+        strModel_P = "models/hl2/p_crossbow.mdl";
+        strModel_W = "models/hl2/w_crossbow.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_XBOW;
     }
@@ -96,14 +96,17 @@ final class weapon_hl2_crossbow : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_crossbow.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 4 );
+        if( self.pev.noise == "" )
+            self.pev.noise = "hl2/xbow_fire1.ogg";
+
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 4 );
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
         const ANIM_XBOW AnimDeploy = self.m_iClip > 0 ? ANIM_XBOW::DRAW : ANIM_XBOW::DRAW_EMPTY;
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_crossbow.mdl" ), self.GetP_Model( "models/hl2/p_crossbow.mdl" ), AnimDeploy, "bow" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), AnimDeploy, "bow" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_XBOW[AnimDeploy];
 
         return blDeployed;
@@ -126,7 +129,7 @@ final class weapon_hl2_crossbow : CustomGunBase
         pCrossbowBolt.pev.velocity = vecAiming * pCrossbowBolt.pev.speed;
         g_EntityFuncs.DispatchSpawn( pCrossbowBolt.edict() );
         g_EntityFuncs.SetModel( pCrossbowBolt, "models/hl2/crossbow_bolt.mdl" );
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/xbow_fire1.ogg", 0.9, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, self.pev.noise, 0.9, ATTN_NORM, 0, PITCH_NORM );
 
         Recoil( Vector( Math.RandomLong( -2, -1 ), 0, 0 ) );
 

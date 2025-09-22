@@ -50,9 +50,6 @@ array<int> I_STATS_GRAVGUN =
 array<string>
     STR_GRAVGUN_MODELS =
     {
-        "models/hl2/p_gravgun.mdl",
-        "models/hl2/v_gravgun.mdl",
-        "models/hl2/w_gravgun.mdl",
         "sprites/hl2/weapon_hl2_gravgun.spr",
         "sprites/hl2/gravgunbeam.spr"
     },
@@ -103,8 +100,11 @@ final class weapon_hl2_gravgun : CustomGunBase
 
     weapon_hl2_gravgun()
     {
-        M_I_STATS = I_STATS_GRAVGUN;
+        strModel_V = "models/hl2/v_gravgun.mdl";
+        strModel_P = "models/hl2/p_gravgun.mdl";
+        strModel_W = "models/hl2/w_gravgun.mdl";
         strSpriteDir = "hl2";
+        M_I_STATS = I_STATS_GRAVGUN;
     }
 
     void Precache()
@@ -115,12 +115,12 @@ final class weapon_hl2_gravgun : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_gravgun.mdl" );
+        SpawnWeapon();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_gravgun.mdl" ), self.GetP_Model( "models/hl2/p_gravgun.mdl" ), ANIM_GRAVGUN::CLOSED_DRAW, "gauss" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_GRAVGUN::CLOSED_DRAW, "gauss" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_GRAVGUN[ANIM_GRAVGUN::CLOSED_DRAW];
 
         if( blDeployed )
@@ -154,7 +154,6 @@ final class weapon_hl2_gravgun : CustomGunBase
             m_hCarried || 
             pEntity is null || 
             pEntity.IsBSPModel() || 
-            pEntity.IsMonster() || 
             pEntity.pev.effects & EF_NODRAW != 0 ||
             !string( pEntity.pev.model ).EndsWith( ".mdl" )
         )
@@ -163,10 +162,18 @@ final class weapon_hl2_gravgun : CustomGunBase
         if( CarriedByOther( pEntity ) )
             return false;
 
-        Vector vecDuckHullSize = ( VEC_HUMAN_HULL_MAX - VEC_HUMAN_HULL_MIN );
-        float flVolume = vecDuckHullSize.x * vecDuckHullSize.y * vecDuckHullSize.z;
+        if( pEntity.IsMonster() && cast<CGrenade@>( pEntity ) is null )
+            return false;
+        // Don't allow the gravgun to pick up the pulsecannon tripod
+        if( pEntity.pev.owner !is null && pEntity.pev.owner.vars.ClassNameIs( "env_hl2_pulsecannon" ) )
+            return false;
+        // !-TEMP-!: Will eventually program hoppermine pickup behaviour.
+        if( pEntity.GetClassname() == "env_hl2_hoppermine" )
+            return false;
 
-        return ( pEntity.pev.size.x * pEntity.pev.size.y * pEntity.pev.size.z ) <= flVolume;
+        const Vector vecSizeLim = ( VEC_HUMAN_HULL_MAX - VEC_HUMAN_HULL_MIN );
+
+        return ( pEntity.pev.size.x * pEntity.pev.size.y * pEntity.pev.size.z ) <= ( vecSizeLim.x * vecSizeLim.y * vecSizeLim.z );
     }
 
     bool CarriedByOther(CBaseEntity@ pEntity)
@@ -178,10 +185,15 @@ final class weapon_hl2_gravgun : CustomGunBase
         {
             CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( iPlayer );
 
-            if( pPlayer is null || pPlayer is m_pPlayer || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
-                continue;
-
-            if( !pPlayer.m_hActiveItem || pPlayer.m_hActiveItem.GetEntity().GetClassname() != self.GetClassname() ) 
+            if
+            (
+                pPlayer is null || 
+                pPlayer is m_pPlayer || 
+                !pPlayer.IsConnected() || 
+                !pPlayer.IsAlive() || 
+                !pPlayer.m_hActiveItem || 
+                pPlayer.m_hActiveItem.GetEntity().GetClassname() != self.GetClassname()
+            ) 
                 continue;
 
             weapon_hl2_gravgun@ pGravGun = cast<weapon_hl2_gravgun@>( CastToScriptClass( pPlayer.m_hActiveItem.GetEntity() ) );
@@ -369,7 +381,7 @@ final class weapon_hl2_gravgun : CustomGunBase
         // Sound is not stopping!
         //g_SoundSystem.StopSound( m_pPlayer.edict(), CHAN_WEAPON, "hl2/superphys_hold_loop.ogg" ); // Doesn't work. Have to do this a frame later
         //g_Scheduler.SetTimeout( @g_SoundSystem, "StopSound", 0.0f, m_pPlayer.edict(), CHAN_WEAPON, "hl2/superphys_hold_loop.ogg" );// Results in "ERROR: CASArguments: unknown type 'SOUND_CHANNEL', aborting!". WHY?!
-        g_Scheduler.SetTimeout( this, "StopSound", 0.0f, "hl2/superphys_hold_loop.ogg", int( CHAN_WEAPON ), EHandle( m_pPlayer ) );
+        g_Scheduler.SetTimeout( @this, "StopSound", 0.0f, "hl2/superphys_hold_loop.ogg", int( CHAN_WEAPON ), EHandle( m_pPlayer ) );
     }
     // somebody kill me now
     void StopSound(const string strSound, int channel, EHandle hEmitter = EHandle())

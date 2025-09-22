@@ -4,11 +4,11 @@
 */
 enum WpnStatIdx
 {
-    iSlot,
-    iPosition,
-    iMaxAmmo1,
-    iMaxAmmo2,
-    iMaxClip,
+    iSlot,// Weapon slot
+    iPosition,// Position in the weapon slot
+    iMaxAmmo1,// Max ammo for primary ammo
+    iMaxAmmo2,// Max ammo for  secondary ammo
+    iMaxClip,// Clip size, -1 if not used
     iDamage1,// Damage of Primary Fire ammo
     iDamage2,// Damage of Secondary Fire ammo, -1 if not used
     iWeight,
@@ -17,13 +17,13 @@ enum WpnStatIdx
 // Baseclasses for common weapon behaviour
 abstract class CustomWeaponBase : ScriptBasePlayerWeaponEntity
 {
-    protected string strSpriteDir;
+    string strModel_V, strModel_P, strModel_W, strSpriteDir;
     protected EHandle m_hViewModel;
     protected array<int> M_I_STATS( WpnStatIdx::iFlags + 1 );
     protected array<CScheduledFunction@> FN_SCHED( 4 );
     array<Vector> M_VEC_VIEWMODELATTACHMENT_POS( 4 );
 
-    protected CBasePlayer@ m_pPlayer
+    protected CBasePlayer@ m_pPlayer // Player who holds the weapon
     {
         get { return cast<CBasePlayer@>( self.m_hPlayer.GetEntity() ); }
         set { self.m_hPlayer = EHandle( @value ); }
@@ -57,31 +57,33 @@ abstract class CustomWeaponBase : ScriptBasePlayerWeaponEntity
     // Invoke in child's Precache method
     bool PrecacheContent(array<string>@ STR_MODELS, array<string>@ STR_SOUNDS, array<string>@ STR_MISC = array<string>()) final
     {
+        g_Game.PrecacheModel( self, strModel_V );
+        g_Game.PrecacheModel( self, strModel_P );
+        g_Game.PrecacheModel( self, strModel_W );
+
         for( uint i = 0; i < STR_MODELS.length(); i++ )
-            g_Game.PrecacheModel( STR_MODELS[i] );
+            g_Game.PrecacheModel( self, STR_MODELS[i] );
 
         for( uint i = 0; i < STR_SOUNDS.length(); i++ )
-        {
-            g_SoundSystem.PrecacheSound( STR_SOUNDS[i] );
-            g_Game.PrecacheGeneric( "sound/" + STR_SOUNDS[i] );// Redundant after SC 5.26
-        }
+            g_SoundSystem.PrecacheSound( self, STR_SOUNDS[i] );
 
         if( STR_MISC.length() > 0 )
         {
             for( uint i = 0; i < STR_MISC.length(); i++ )
                 g_Game.PrecacheGeneric( STR_MISC[i] );
         }
-
+        
+        g_SoundSystem.PrecacheSound( self, self.pev.noise );
         g_Game.PrecacheGeneric( "sprites/" + ( strSpriteDir != "" ? strSpriteDir + "/" : "" ) + self.GetClassname() + ".txt" );
         self.PrecacheCustomModels();
 
         return true;
     }
     // Invoke in child's Spawn method
-    void SpawnWeapon(const string strWorldModel, const int iDefaultAmmoAmount = 0) final
+    void SpawnWeapon(const int iDefaultAmmoAmount = 0) final
     {
         self.Precache();
-        g_EntityFuncs.SetModel( self, self.GetW_Model( strWorldModel ) );
+        g_EntityFuncs.SetModel( self, self.GetW_Model( strModel_W ) );
         self.FallInit();
 
         if( iDefaultAmmoAmount > 0 )
@@ -210,7 +212,7 @@ abstract class CustomGunBase : CustomWeaponBase
             m_pPlayer.m_rgAmmo( self.m_iSecondaryAmmoType, M_I_STATS[iMaxAmmo2] );
     }
 
-    bool ShootingNotAllowed()
+    bool ShootingNotAllowed() 
     {
         if( m_pPlayer is null )
             return false;
@@ -285,7 +287,8 @@ abstract class CustomGunBase : CustomWeaponBase
 
         return true;
     }
-
+    // Launches a grenade, returns the grenade entity if successful.
+    // iShootAnim is the animation to play when shooting the grenade.
     CGrenade@ LaunchGrenade(int iShootAnim, int iDamage = 0, float flSpeed = 800.0f, float flGravity = 0.0f, string strModel = "")
     {
         m_pPlayer.m_iExtraSoundTypes = bits_SOUND_DANGER;
@@ -352,14 +355,15 @@ abstract class CustomGunBase : CustomWeaponBase
             fU = Math.RandomFloat( 100, 150 );
 
         for( int i = 0; i < 3; i++ )
-        {
+        { 
             vecShellVelocity[i] = m_pPlayer.pev.velocity[i] + vecRight[i] * fR + vecUp[i] * fU + vecForward[i] * 25;
             vecShellOrigin[i] = m_pPlayer.pev.origin[i] + m_pPlayer.pev.view_ofs[i] + vecUp[i] * upScale + vecForward[i] * forwardScale + vecRight[i] * rightScale;
         }
 
         g_EntityFuncs.EjectBrass( vecShellOrigin, vecShellVelocity, m_pPlayer.pev.angles.y, iShellModel > 0 ? iShellModel : m_iShell, soundtype );
     }
-
+    // Applies recoil to the player, vecAimPunch is the amount of recoil to apply.
+    // flPunchScale is the scale of the recoil, default is 1.0f.
     void Recoil(Vector& in vecAimPunch, float flPunchScale = 1.0f) final
     {
         if( m_pPlayer is null || vecAimPunch == g_vecZero )
@@ -367,7 +371,8 @@ abstract class CustomGunBase : CustomWeaponBase
 
         m_pPlayer.pev.punchangle = vecAimPunch * flPunchScale;
     }
-
+    // Draws a colour tracer, vecDir is the direction of the tracer, colour is the colour of the tracer (1-11), length is the length of the tracer.
+    // Colour 0 is white, 1-11 are the colours defined in TE_USERTRACER.
     void DrawColourTracer(Vector& in vecDir, uint8 colour = 0, uint8 length = 12) final
     {
         if( m_pPlayer is null || vecDir == g_vecZero )
@@ -392,7 +397,7 @@ abstract class CustomGunBase : CustomWeaponBase
             colourtracer.WriteByte( length );
         colourtracer.End();
     }
-
+    // Aims down sights, iZoomFov is the FOV to set when aiming down sights.
     void AimDownSights(const int iZoomFov)
     {
         if( m_pPlayer is null || self.m_fInReload )
@@ -402,7 +407,8 @@ abstract class CustomGunBase : CustomWeaponBase
         //m_pPlayer.SetVModelPos( g_vecZero ); !-UNDONE-!: This was causing the viewmodel to be out of alignment requiring viewmodel edits
         self.m_fInZoom = true;
     }
-
+    // Stops aiming down sights, resets the FOV to 0.
+    // This will also reset the viewmodel position to the default position.
     void HipFire()
     {
         if( m_pPlayer is null )
@@ -412,7 +418,7 @@ abstract class CustomGunBase : CustomWeaponBase
         //m_pPlayer.ResetVModelPos(); !-UNDONE-!: See reason in method "AimDownSights" 
         self.m_fInZoom = false;
     }
-
+    // Deducts primary ammo, returns the amount of primary ammo left.
     int DeductPrimaryAmmo(const int iAmount = 1) final
     {
         if( m_pPlayer is null )
@@ -421,7 +427,7 @@ abstract class CustomGunBase : CustomWeaponBase
         m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType, m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) - iAmount );
         return m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType );
     }
-
+    // Deducts secondary ammo, returns the amount of secondary ammo left.
     int DeductSecondaryAmmo(const int iAmount = 1) final
     {
         if( m_pPlayer is null )
@@ -441,7 +447,7 @@ abstract class CustomGunBase : CustomWeaponBase
 
         return false;
     }
-
+    // Holsters the weapon, removes the viewmodel and stops all scheduled functions.
     void Holster(int skiplocal = 0)
     {
         if( self.m_fInZoom )
@@ -479,7 +485,7 @@ abstract class CustomAmmoBase : ScriptBasePlayerAmmoEntity
 
     void Precache()
     {
-        g_Game.PrecacheModel( strModel );
+        g_Game.PrecacheModel( self, strModel );
         BaseClass.Precache();
     }
 
@@ -501,5 +507,42 @@ abstract class CustomAmmoBase : ScriptBasePlayerAmmoEntity
         g_SoundSystem.EmitSoundDyn( self.edict(), CHAN_ITEM, strPickupSound, 1, ATTN_NORM );
         
         return true;
+    }
+};
+// Common behaviour for throwable weapons, such as grenades and tripmines
+mixin class ThrowableWeaponBase
+{   // Enforce some rules for throwable weapons
+    private bool blStatsOverridden = OverrideStats();
+
+    bool OverrideStats()
+    {
+        M_I_STATS[WpnStatIdx::iMaxAmmo2] = M_I_STATS[WpnStatIdx::iMaxClip] = WEAPON_NOCLIP;
+        M_I_STATS[WpnStatIdx::iFlags] = ITEM_FLAG_LIMITINWORLD | ITEM_FLAG_EXHAUSTIBLE;
+
+        return true;
+    }
+
+    bool CanHaveDuplicates()
+    {
+        return true;
+    }
+
+    bool CanDeploy()
+    {
+        return m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) > 0;
+    }
+
+    bool IsEmpty()
+    {
+        return m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) < 1;
+    }
+
+    int DeductPrimaryAmmo(const int iAmount = 1) final
+    {
+        if( m_pPlayer is null )
+            return 0;
+
+        m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType, m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType ) - iAmount );
+        return m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType );
     }
 };

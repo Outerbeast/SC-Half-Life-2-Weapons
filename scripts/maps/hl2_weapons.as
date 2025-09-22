@@ -35,6 +35,8 @@ Credits:
 #include "hl2/weapon_hl2_stunstick"
 #include "hl2/weapon_hl2_gravgun"
 #include "hl2/weapon_hl2_frag"
+#include "hl2/weapon_hl2_hoppermine"
+#include "hl2/weapon_hl2_manhack"
 #include "hl2/weapon_hl2_pistol"
 #include "hl2/weapon_hl2_alyxgun"
 #include "hl2/weapon_hl2_revolver"
@@ -66,6 +68,9 @@ array<ItemMapping@> IM_HL2_WEAPONS =
     ItemMapping( "weapon_egon", "weapon_hl2_gravgun" ),
     ItemMapping( "weapon_sniperrifle", "weapon_hl2_sniperrifle" ),
     ItemMapping( "weapon_minigun", "weapon_hl2_pulsecannon" ),
+    ItemMapping( "weapon_handgrenade", "weapon_hl2_frag" ),
+    ItemMapping( "weapon_tripmine", "weapon_hl2_hoppermine" ),
+    ItemMapping( "weapon_satchel", "weapon_hl2_hoppermine" ),
     ItemMapping( "ammo_ARgrenades", "ammo_hl2_oicw_grenade" ),
     ItemMapping( "ammo_crossbow", "ammo_hl2_crossbow" ),
     ItemMapping( "ammo_762", "ammo_hl2_sniperrifle" )
@@ -92,7 +97,8 @@ bool RegisterWeapons(const bool blReplaceStockWeapons = true)
         RegisterXBow() &&
         RegisterSniperRifle() &&
         RegisterPulseCannon() &&
-        RegisterFrag();
+        RegisterFrag() &&
+        RegisterHopperMine();
 
     if( blAllRegistered && blReplaceStockWeapons )
     {
@@ -158,9 +164,39 @@ HookReturnCode SwapItem(CBaseEntity@ pOldItem)
 // !-WIP-!: more features to be added
 final class info_register_hl2weapons : ScriptBaseEntity 
 {
+    private array<ItemMapping@> IM_ITEMS;
+
+    bool KeyValue(const string& in szKey, const string& in szValue)
+    {
+        if( IM_ITEMS.findByRef( ItemMapping( szKey, szValue ) ) < 0 )
+            IM_ITEMS.insertLast( ItemMapping( szKey, szValue ) );
+        else
+            return BaseClass.KeyValue( szKey, szValue );
+
+        return true;
+    }
+
+    void Precache()
+    {
+        if( IM_ITEMS.length() < 1 )
+            return;
+        else
+            IM_HL2_WEAPONS = IM_ITEMS;
+
+        for( uint w = 0; w < IM_ITEMS.length(); w++ )
+        {
+            if( IM_ITEMS[w].get_To() == "" )
+                continue;
+
+            g_Game.PrecacheOther( IM_ITEMS[w].get_To() );
+        }
+
+        BaseClass.Precache();
+    }
+
     void PreSpawn()
     {
-        if( RegisterWeapons( self.pev.SpawnFlagBitSet( 1 << 0 ) ) )
+        if( RegisterWeapons( !self.pev.SpawnFlagBitSet( 1 << 0 ) ) )
             g_Log.PrintF( "HL2_WEAPONS: Weapons are all registered. Woohoo!\n" );
 
         g_EntityFuncs.Remove( self );

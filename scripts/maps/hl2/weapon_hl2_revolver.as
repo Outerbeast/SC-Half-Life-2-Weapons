@@ -42,16 +42,13 @@ array<int> I_STATS_REVOLVER =
     1,
     7,
     12,
-    -1,
+    WEAPON_NOCLIP,
     6
 };
 
 array<string>
     STR_REVOLVER_MODELS =
     {
-        "models/hl2/w_357.mdl",
-        "models/hl2/p_357.mdl",
-        "models/hl2/v_357.mdl",
         "sprites/hl2/weapon_hl2_revolver.spr"
     },
     STR_REVOLVER_SOUNDS =
@@ -78,6 +75,9 @@ final class weapon_hl2_revolver : CustomGunBase
 {
     weapon_hl2_revolver()
     {
+        strModel_V = "models/hl2/v_357.mdl";
+        strModel_P = "models/hl2/p_357.mdl";
+        strModel_W = "models/hl2/w_357.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_REVOLVER;
     }
@@ -90,13 +90,13 @@ final class weapon_hl2_revolver : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_357.mdl", M_I_STATS[WpnStatIdx::iMaxClip] );
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] );
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_357.mdl" ), self.GetP_Model( "models/hl2/p_357.mdl" ), ANIM_REVOLVER::DRAW, "python" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_REVOLVER::DRAW, "python" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_REVOLVER[ANIM_REVOLVER::DRAW];
 
         return blDeployed;

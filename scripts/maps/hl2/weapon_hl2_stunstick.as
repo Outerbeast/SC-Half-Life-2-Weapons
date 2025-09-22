@@ -62,9 +62,6 @@ array<int> I_STATS_STUNSTICK =
 array<string>
     STR_STUNSTICK_MODELS =
     {
-        "models/hl2/p_stunstick.mdl",
-        "models/hl2/v_stunstick.mdl",
-        "models/hl2/w_stunstick.mdl",
         "sprites/hl2/weapon_hl2_stunstick.spr",
         "sprites/hl2/stunstick_shock.spr"
     },
@@ -99,8 +96,11 @@ final class weapon_hl2_stunstick : CustomWeaponBase
 {
     weapon_hl2_stunstick()
     {
-        M_I_STATS = I_STATS_STUNSTICK;
+        strModel_V = "models/hl2/v_stunstick.mdl";
+        strModel_P = "models/hl2/p_stunstick.mdl";
+        strModel_W = "models/hl2/w_stunstick.mdl";
         strSpriteDir = "hl2";
+        M_I_STATS = I_STATS_STUNSTICK;
     }
 
     void Precache()
@@ -111,13 +111,13 @@ final class weapon_hl2_stunstick : CustomWeaponBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_stunstick.mdl" );
+        SpawnWeapon();
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_stunstick.mdl" ), self.GetP_Model( "models/hl2/p_stunstick.mdl" ), ANIM_STUNSTICK::DRAW, "crowbar" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_STUNSTICK::DRAW, "crowbar" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_STUNSTICK[ANIM_STUNSTICK::DRAW];
 
         return blDeployed;
@@ -157,7 +157,7 @@ final class weapon_hl2_stunstick : CustomWeaponBase
         return tr;
     }
 
-    bool Strike(TraceResult& in trStrike, float flDamage, string s_HitBody, string s_HitWall, int iDmgType)
+    bool Strike(TraceResult& in trStrike, float flDamage, string& in s_HitBody, string& in s_HitWall, int iDmgType)
     {
         CBaseEntity@ pEntity = g_EntityFuncs.Instance( trStrike.pHit );
         

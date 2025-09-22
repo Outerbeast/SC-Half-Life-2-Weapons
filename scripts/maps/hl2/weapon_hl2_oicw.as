@@ -55,9 +55,6 @@ array<int> I_STATS_OICW =
 array<string>
     STR_OICW_MODELS =
     {
-        "models/hl2/p_oicw.mdl",
-        "models/hl2/v_oicw.mdl",
-        "models/hl2/w_oicw.mdl",
         "models/hl2/scope_oicw.mdl",
         "models/hl2/grenade_20mm.mdl",
         "models/hl2/shell_20mm.mdl",
@@ -109,6 +106,9 @@ final class weapon_hl2_oicw : CustomGunBase
 
     weapon_hl2_oicw()
     {
+        strModel_V = "models/hl2/v_oicw.mdl";
+        strModel_P = "models/hl2/p_oicw.mdl";
+        strModel_W = "models/hl2/w_oicw.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_OICW;
         m_iShell = g_Game.PrecacheModel( "models/saw_shell.mdl" );
@@ -140,14 +140,17 @@ final class weapon_hl2_oicw : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_oicw.mdl", M_I_STATS[iMaxClip] * 2 );
+        if( self.pev.noise == "" )
+            self.pev.noise = "hl2/oicw_fire.ogg";
+
+        SpawnWeapon( M_I_STATS[iMaxClip] * 2 );
         self.m_iClip2 = 0;
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_oicw.mdl" ), self.GetP_Model( "models/hl2/p_oicw.mdl" ), ANIM_OICW::DRAW, "m16" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_OICW::DRAW, "m16" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_OICW[ANIM_OICW::DRAW];
 
         if( !hLaserDot )
@@ -180,7 +183,7 @@ final class weapon_hl2_oicw : CustomGunBase
 
     bool PostShoot()
     {
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/oicw_fire.ogg", 0.5, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, self.pev.noise, 0.5f, ATTN_NORM, 0, PITCH_NORM );
         MuzzleFlash( RGBA( 255, 200, 180, 8 ) ); 
         EjectCasing( 26.0f, 16.0f, -15.0f );
         Recoil( Vector( 1.0f, 0.5f, 0.0f ), float( Math.RandomLong( -2, -1 ) ) );
@@ -202,7 +205,7 @@ final class weapon_hl2_oicw : CustomGunBase
         }
 
         Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), self.BulletAccuracy( VECTOR_CONE_4DEGREES, VECTOR_CONE_3DEGREES, VECTOR_CONE_2DEGREES ), BULLET_PLAYER_SAW );
-        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( @this, "Burst", self.m_flNextBurstRound, --iShots );
     }
 
     bool ShootGrenade()

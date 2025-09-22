@@ -72,9 +72,6 @@ array<int> I_STATS_AR2 =
 array<string>
     STR_AR2_MODELS =
     {
-        "models/hl2/p_ar2.mdl",
-        "models/hl2/v_ar2.mdl",
-        "models/hl2/w_ar2.mdl",
         "models/hl2/w_ar2_clip.mdl",
         "models/hl2/w_ar2_energy.mdl",
         "models/hl2/ar2_energyball.mdl",
@@ -126,6 +123,9 @@ final class weapon_hl2_ar2 : CustomGunBase
 {
     weapon_hl2_ar2()
     {
+        strModel_V = "models/hl2/v_ar2.mdl";
+        strModel_P = "models/hl2/p_ar2.mdl";
+        strModel_W = "models/hl2/w_ar2.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_AR2;
     }
@@ -138,7 +138,10 @@ final class weapon_hl2_ar2 : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_ar2.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 2 );
+        if( self.pev.noise == "" )
+            self.pev.noise = "hl2/ar2_single.ogg";
+
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 2 );
         self.m_iDefaultSecAmmo = 0;
 
         BaseClass.Spawn();
@@ -162,7 +165,7 @@ final class weapon_hl2_ar2 : CustomGunBase
                 AnimDeploy = ANIM_AR2::DRAW;
         }
 
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_ar2.mdl" ), self.GetP_Model( "models/hl2/p_ar2.mdl" ), AnimDeploy, "m16" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), AnimDeploy, "m16" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_AR2[AnimDeploy];
 
         return blDeployed;
@@ -212,7 +215,7 @@ final class weapon_hl2_ar2 : CustomGunBase
 
     bool PostShoot()
     {
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/ar2_single.ogg", 0.9f, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, self.pev.noise, 0.9f, ATTN_NORM, 0, PITCH_NORM );
         MuzzleFlash( RGBA( 50, 128, 255, 8 ) );
         DrawColourTracer( m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), 3 );
 
@@ -241,7 +244,7 @@ final class weapon_hl2_ar2 : CustomGunBase
             return;
         
         m_pPlayer.SetAnimation( PLAYER_ATTACK1 );
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/ar2_altfire.ogg", 0.9, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/ar2_altfire.ogg", 0.9f, ATTN_NORM, 0, PITCH_NORM );
 
         if( DeductSecondaryAmmo() < 1 )
             m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
@@ -372,6 +375,7 @@ final class ar2_energy_ball : ScriptBaseAnimating
         self.pev.skin       = 1;
         self.pev.framerate  = 10.0f;
         self.pev.effects    |= EF_BRIGHTLIGHT;
+        self.AddEntityFlag( EFLAG_PROJECTILE | EFLAG_IGNOREGRAVITY );
 
         g_EntityFuncs.SetOrigin( self, self.pev.origin );
         g_EntityFuncs.SetModel( self, "models/hl2/ar2_energyball.mdl" );

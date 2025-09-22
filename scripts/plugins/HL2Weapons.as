@@ -30,6 +30,7 @@ Credits:
 #include "../maps/hl2/weapon_hl2_stunstick"
 #include "../maps/hl2/weapon_hl2_gravgun"
 #include "../maps/hl2/weapon_hl2_frag"
+#include "../maps/hl2/weapon_hl2_hoppermine"
 #include "../maps/hl2/weapon_hl2_pistol"
 #include "../maps/hl2/weapon_hl2_alyxgun"
 #include "../maps/hl2/weapon_hl2_revolver"
@@ -61,6 +62,8 @@ array<WeaponExchangeOption> EXCH_MENU_WEAPONS =
     WeaponExchangeOption( "Gravity Gun: Egon",          "egon",         "gravgun" ),
     WeaponExchangeOption( "Gravity Gun: Displacer",     "displacer",    "gravgun" ),
     WeaponExchangeOption( "MK3A2 Frag: Hand Grenade",   "handgrenade",  "frag" ),
+    WeaponExchangeOption( "Hoppermine: Tripmine",       "tripmine",     "hoppermine" ),
+    WeaponExchangeOption( "Hoppermine: Tripmine",       "satchel",      "hoppermine" )
 };
 
 array<AmmoExchangeOption> EXCH_MENU_AMMO =
@@ -104,6 +107,8 @@ void PluginInit()
 
     if( menuWeaponExchange.Register() && menuAmmoExchange.Register() )
         g_Hooks.RegisterHook( Hooks::Player::ClientSay, PlayerOpenMenu );
+
+    countPluginInitExec++;
 }
 
 void MapInit()
@@ -127,7 +132,8 @@ void MapInit()
         HL2_WEAPONS::RegisterXBow() &&
         HL2_WEAPONS::RegisterSniperRifle() &&
         HL2_WEAPONS::RegisterPulseCannon() &&
-        HL2_WEAPONS::RegisterFrag();
+        HL2_WEAPONS::RegisterFrag() &&
+        HL2_WEAPONS::RegisterHopperMine();
 }
 
 bool MapIsBlackListed()
@@ -149,6 +155,8 @@ bool MapIsBlackListed()
 
         blBlackListedMapFound = string( g_Engine.mapname ).StartsWith( strCurrentLine );
     }
+
+    fileBlackList.Close();
 
     return blBlackListedMapFound;
 }
@@ -202,7 +210,7 @@ int ExchangeAmmo(CBasePlayer@ pPlayer, AmmoExchangeOption@ chosen)
     if( iAmmoType < 0 )
         return -1;
 
-    if( pPlayer.m_rgAmmo( iAmmoType ) < chosen.m_iCost )
+    if( pPlayer.m_rgAmmo( iAmmoType ) < int( chosen.m_iCost ) )
     {
         g_PlayerFuncs.SayText( pPlayer, "You don't have enough ammo to trade for '" + chosen.m_strItem + "'. Required is " + chosen.m_iCost + " " + chosen.m_strAmmo + "s.\n" );
         return -1;

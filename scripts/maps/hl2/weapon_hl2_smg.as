@@ -30,7 +30,7 @@ enum ANIM_SMG
 
 const array<float> FL_ANIMTIME_SMG =
 {
-    0.07f,
+    6.0f,
     1.05f,
     1.6f,
     0.87f,
@@ -40,9 +40,9 @@ const array<float> FL_ANIMTIME_SMG =
     0.33f,
     1.0f,
     0.33f,
-    0.7f,
-    0.7f,
-    0.7f
+    0.53f,
+    0.53f,
+    0.53f
 };
 
 array<int> I_STATS_SMG =
@@ -58,9 +58,6 @@ array<int> I_STATS_SMG =
 array<string>
     STR_SMG_MODELS =
     {
-        "models/hl2/p_mp7.mdl",
-        "models/hl2/v_mp7.mdl",
-        "models/hl2/w_mp7.mdl",
         "sprites/hl2/weapon_hl2_smg.spr",
         "sprites/hl2/smg_muzzleflash.spr"
     },
@@ -73,7 +70,7 @@ array<string>
         "hl2/mp7_altfire.ogg"
     };
 
-CCVar cvarMP7GL( "hl2_mp7_glmode", 0, "MP7 grenade mode" );
+CCVar cvarMP7GL( "hl2_smg_glmode", 0, "MP7 grenade mode" );
 const string strWeapon_SMG = "weapon_hl2_smg";
 
 bool RegisterSMG()
@@ -81,7 +78,7 @@ bool RegisterSMG()
     g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strWeapon_SMG, strWeapon_SMG );
 
     if( cvarMP7GL.GetInt() < 1 )
-        I_STATS_SMG[WpnStatIdx::iMaxAmmo2] = -1;
+        I_STATS_SMG[WpnStatIdx::iMaxAmmo2] = WEAPON_NOCLIP;
 
     g_ItemRegistry.RegisterWeapon( strWeapon_SMG, "hl2", "9mm", ( I_STATS_SMG[WpnStatIdx::iMaxAmmo2] > 0 ? "ARgrenades" : "" ) );
     g_Game.PrecacheOther( strWeapon_SMG );
@@ -93,6 +90,9 @@ final class weapon_hl2_smg : CustomGunBase
 {
     weapon_hl2_smg()
     {
+        strModel_V = "models/hl2/v_mp7.mdl";
+        strModel_P = "models/hl2/p_mp7.mdl";
+        strModel_W = "models/hl2/w_mp7.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_SMG;
     }
@@ -105,13 +105,13 @@ final class weapon_hl2_smg : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( self.GetW_Model( "models/hl2/w_mp7.mdl" ), M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_mp7.mdl" ), self.GetP_Model( "models/hl2/p_mp7.mdl" ), ANIM_SMG::DRAW, "onehanded" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_SMG::DRAW, "onehanded" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_SMG[ANIM_SMG::DRAW];
 
         return blDeployed;
@@ -178,10 +178,11 @@ final class weapon_hl2_smg : CustomGunBase
             return;
         }
 
-        if( self.m_fInZoom )
-            Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_2DEGREES ), self.BulletAccuracy( VECTOR_CONE_4DEGREES, VECTOR_CONE_2DEGREES, VECTOR_CONE_1DEGREES ), BULLET_PLAYER_9MM );
-        else
-            Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), self.BulletAccuracy( VECTOR_CONE_6DEGREES, VECTOR_CONE_6DEGREES, VECTOR_CONE_4DEGREES ), BULLET_PLAYER_9MM );
+        const Vector vecAccuracy = self.m_fInZoom ?
+            self.BulletAccuracy( VECTOR_CONE_4DEGREES, VECTOR_CONE_2DEGREES, VECTOR_CONE_1DEGREES ) :
+            self.BulletAccuracy( VECTOR_CONE_6DEGREES, VECTOR_CONE_4DEGREES, VECTOR_CONE_2DEGREES );
+
+        Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), vecAccuracy, BULLET_PLAYER_9MM );
 
         if( self.m_flNextPrimaryAttack < g_Engine.time )
             self.m_flNextPrimaryAttack = g_Engine.time + 0.077f;

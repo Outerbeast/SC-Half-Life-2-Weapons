@@ -45,12 +45,19 @@ const array<float> FL_ANIMTIME_PISTOL =
     0.37f
 };
 
+array<int> I_STATS_PISTOL =
+{
+    1,//iSlot,
+    5,//iPosition,
+    300,//iMaxAmmo1,
+    WEAPON_NOCLIP,//iMaxAmmo2,
+    18,//iMaxClip,
+    int( g_EngineFuncs.CVarGetFloat( "sk_9mm_bullet" ) )
+};
+
 array<string>
     STR_PISTOL_MODELS =
     {
-        "models/hl2/w_usp.mdl",
-        "models/hl2/p_usp.mdl",
-        "models/hl2/v_usp.mdl",
         "sprites/hl2/weapon_hl2_pistol.spr",
         "sprites/hl2/pistol_muzzleflash.spr"
     },
@@ -59,16 +66,6 @@ array<string>
         "hl2/pistol_shoot.ogg",
         "hl2/pistol_reload1.ogg"
     };
-
-array<int> I_STATS_PISTOL =
-{
-    1,//iSlot,
-    5,//iPosition,
-    300,//iMaxAmmo1,
-    -1,//iMaxAmmo2,
-    18,//iMaxClip,
-    int( g_EngineFuncs.CVarGetFloat( "sk_9mm_bullet" ) )
-};
 
 const string strWeapon_Pistol = "weapon_hl2_pistol";
 
@@ -84,6 +81,9 @@ final class weapon_hl2_pistol : CustomGunBase
 {
     weapon_hl2_pistol()
     {
+        strModel_P = "models/hl2/p_usp.mdl";
+        strModel_V = "models/hl2/v_usp.mdl";
+        strModel_W = "models/hl2/w_usp.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_PISTOL;
     }
@@ -96,13 +96,16 @@ final class weapon_hl2_pistol : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_usp.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
+        if( self.pev.noise == "" )
+            self.pev.noise = "hl2/pistol_shoot.ogg";
+        
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
     }
 
     bool Deploy()
     {
         const ANIM_PISTOL AnimDeploy = self.m_iClip < 1 ? ANIM_PISTOL::EMPTY_DRAW : ANIM_PISTOL::DRAW;
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_usp.mdl" ), self.GetP_Model( "models/hl2/p_usp.mdl" ), AnimDeploy, "onehanded" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), AnimDeploy, "onehanded" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_PISTOL[AnimDeploy];
 
         return blDeployed;
@@ -136,7 +139,7 @@ final class weapon_hl2_pistol : CustomGunBase
 
     bool PostShoot()
     {
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/pistol_shoot.ogg", 1.0, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, self.pev.noise, 1.0, ATTN_NORM, 0, PITCH_NORM );
         MuzzleFlash( RGBA( 255, 200, 180, 8 ) ); 
         EjectCasing( 24, 7, -6 );
         Vector vecAimPunch;
@@ -162,7 +165,7 @@ final class weapon_hl2_pistol : CustomGunBase
         }
 
         Shoot( 1, m_pPlayer.GetAutoaimVector( AUTOAIM_10DEGREES ), self.BulletAccuracy( VECTOR_CONE_8DEGREES, VECTOR_CONE_4DEGREES, VECTOR_CONE_3DEGREES ), BULLET_PLAYER_9MM );
-        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "Burst", self.m_flNextBurstRound, --iShots );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( @this, "Burst", self.m_flNextBurstRound, --iShots );
     }
 
     void PrimaryAttack()

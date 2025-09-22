@@ -51,7 +51,7 @@ array<int> I_STATS_SHOTGUN =
     2,
     5,
     30,
-    -1,
+    WEAPON_NOCLIP,
     6,
     int( g_EngineFuncs.CVarGetFloat( "sk_plr_buckshot" ) ),// Damage of Primary Fire ammo
     0
@@ -60,9 +60,6 @@ array<int> I_STATS_SHOTGUN =
 array<string>
     STR_SHOTGUN_MODELS =
     {
-        "models/w_shotgun.mdl",
-        "models/p_shotgun.mdl",
-        "models/hl2/v_shotgun.mdl",
         "sprites/hl2/weapon_hl2_shotgun.spr"
     },
     STR_SHOTGUN_SOUNDS =
@@ -94,6 +91,9 @@ final class weapon_hl2_shotgun: CustomGunBase
     
     weapon_hl2_shotgun()
     {
+        strModel_V = "models/hl2/v_shotgun.mdl";
+        strModel_W = "models/w_shotgun.mdl";
+        strModel_P = "models/p_shotgun.mdl";
         strSpriteDir = "hl2";
         m_iShell = g_Game.PrecacheModel( "models/shotgunshell.mdl" );
         strEmptySound = "hl2/shotgun_empty.ogg";
@@ -108,13 +108,13 @@ final class weapon_hl2_shotgun: CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/w_shotgun.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 5 );
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 5 );
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_shotgun.mdl" ), self.GetP_Model( "models/p_shotgun.mdl" ), ANIM_SHOTGUN::DRAW, "shotgun" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_SHOTGUN::DRAW, "shotgun" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_SHOTGUN[ANIM_SHOTGUN::DRAW];
 
         return blDeployed;
@@ -150,10 +150,10 @@ final class weapon_hl2_shotgun: CustomGunBase
 
     bool PostShoot()
     {
-        g_SoundSystem.EmitSoundDyn(m_pPlayer.edict(), CHAN_WEAPON, "hl2/shotgun_" + ( blDoubleShot ? "dbl_" : "" ) + "fire2.ogg", 1.0f, ATTN_NORM, 0, 93 + Math.RandomLong( 0, 31 ) );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/shotgun_" + ( blDoubleShot ? "dbl_" : "" ) + "fire2.ogg", 1.0f, ATTN_NORM, 0, 93 + Math.RandomLong( 0, 31 ) );
         MuzzleFlash( RGBA( 255, 200, 180, 8 ) );
         Recoil( Vector( -5, 0, 0 ), blDoubleShot ? 2 : 1 );
-        @FN_SCHED[0] = g_Scheduler.SetTimeout( this, "EjectShell", blDoubleShot ? 0.57f : 0.4f );
+        @FN_SCHED[0] = g_Scheduler.SetTimeout( @this, "EjectShell", blDoubleShot ? 0.57f : 0.4f );
 
         if( m_pPlayer.m_rgAmmo( self.m_iPrimaryAmmoType) < 1 )
             m_pPlayer.SetSuitUpdate( "!HEV_AMO0", false, 0 );
@@ -214,7 +214,7 @@ final class weapon_hl2_shotgun: CustomGunBase
             return;
         }
 
-        Shoot( 7, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.08716f, 0.04362f, 0.00f ), BULLET_PLAYER_BUCKSHOT );
+        Shoot( 7, m_pPlayer.GetAutoaimVector( AUTOAIM_5DEGREES ), Vector( 0.08716f, 0.04362f, 0.0f ), BULLET_PLAYER_BUCKSHOT );
         self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_SHOTGUN[ANIM_SHOTGUN::FIRE1] + ( self.m_iClip < 1 ? 0.5f : 0.0f );
     }
 
@@ -222,7 +222,7 @@ final class weapon_hl2_shotgun: CustomGunBase
     {
         blDoubleShot = self.m_iClip > 1;
         // Only one shell left in the magazine, do normal single shell fire.
-        if( !blDoubleShot)
+        if( !blDoubleShot )
         {
             PrimaryAttack();
             return;

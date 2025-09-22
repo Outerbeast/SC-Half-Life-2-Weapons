@@ -42,9 +42,6 @@ array<int> I_STATS_SRIFLE =
 array<string>
     STR_SRIFLE_MODELS =
     {
-        "models/hl2/p_combinesniper.mdl",
-        "models/hl2/v_combinesniper.mdl",
-        "models/hl2/w_combinesniper.mdl",
         "models/hl2/scope_combinesniper.mdl",
         "models/hl2/w_combinesniper_clip.mdl",
         "sprites/hl2/weapon_hl2_sniperrifle.spr",
@@ -65,9 +62,9 @@ const string
 
 bool RegisterSniperRifle()
 {
-	g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strWeapon_SniperRifle, strWeapon_SniperRifle );
+    g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strWeapon_SniperRifle, strWeapon_SniperRifle );
     g_CustomEntityFuncs.RegisterCustomEntity( "HL2_WEAPONS::" + strAmmo_SniperRifle, strAmmo_SniperRifle );
-	g_ItemRegistry.RegisterWeapon( strWeapon_SniperRifle, "hl2", strAmmo_SniperRifle );
+    g_ItemRegistry.RegisterWeapon( strWeapon_SniperRifle, "hl2", strAmmo_SniperRifle );
 
     return g_CustomEntityFuncs.IsCustomEntity( strWeapon_SniperRifle );
 }
@@ -77,7 +74,7 @@ final class weapon_hl2_sniperrifle : CustomGunBase
     private bool blShotPrimed;
     private EHandle hAimLaser;
 
-    CBeam@ m_pAimLaser
+    private CBeam@ m_pAimLaser
     {
         get { return cast<CBeam@>( hAimLaser.GetEntity() ); }
         set { hAimLaser = EHandle( @value ); }
@@ -85,6 +82,9 @@ final class weapon_hl2_sniperrifle : CustomGunBase
 
     weapon_hl2_sniperrifle()
     {
+        strModel_V = "models/hl2/v_combinesniper.mdl";
+        strModel_P = "models/hl2/p_combinesniper.mdl";
+        strModel_W = "models/hl2/w_combinesniper.mdl";
         strSpriteDir = "hl2";
         M_I_STATS = I_STATS_SRIFLE;
     }
@@ -97,13 +97,16 @@ final class weapon_hl2_sniperrifle : CustomGunBase
 
     void Spawn()
     {
-        SpawnWeapon( "models/hl2/w_combinesniper.mdl", M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
+        if( self.pev.noise == "" )
+            self.pev.noise = "hl2/sniperfire1.ogg";
+
+        SpawnWeapon( M_I_STATS[WpnStatIdx::iMaxClip] * 3 );
         BaseClass.Spawn();
     }
 
     bool Deploy()
     {
-        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( "models/hl2/v_combinesniper.mdl" ), self.GetP_Model( "models/hl2/p_combinesniper.mdl" ), ANIM_SRIFLE::DRAW, "sniper" );
+        const bool blDeployed = self.DefaultDeploy( self.GetV_Model( strModel_V ), self.GetP_Model( strModel_P ), ANIM_SRIFLE::DRAW, "sniper" );
         self.m_flTimeWeaponIdle = self.m_flNextPrimaryAttack = self.m_flNextSecondaryAttack = g_Engine.time + FL_ANIMTIME_SRIFLE[ANIM_SRIFLE::DRAW];
         blShotPrimed = false;
 
@@ -124,7 +127,7 @@ final class weapon_hl2_sniperrifle : CustomGunBase
         @m_pAimLaser = g_EntityFuncs.CreateBeam( "sprites/laserbeam.spr", 4 );
         m_pAimLaser.SetType( BEAM_ENTPOINT );
         m_pAimLaser.PointEntInit( AimPos(), m_pPlayer );
-		m_pAimLaser.SetEndAttachment( 1 );
+        m_pAimLaser.SetEndAttachment( 1 );
         m_pAimLaser.SetColor( 83, 170, 213 );
         m_pAimLaser.SetNoise( 0 );
         m_pAimLaser.pev.effects |= EF_NODRAW;
@@ -142,7 +145,7 @@ final class weapon_hl2_sniperrifle : CustomGunBase
 
     bool PostShoot()
     {
-        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/sniperfire1.ogg", 1.0f, ATTN_NORM, 0, PITCH_NORM );
+        g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, self.pev.noise, 1.0f, ATTN_NORM, 0, PITCH_NORM );
         MuzzleFlash( RGBA( 50, 128, 255, 8 ) );
         DrawColourTracer( m_pPlayer.GetAutoaimVector( AUTOAIM_2DEGREES ), 3 );
         Recoil( Vector( -5, 0, 0 ) );
