@@ -21,7 +21,7 @@
 	killtarget(target_destination) : "Kill Target"
 ]
 
-@BaseClass size(0 0 0, 32 32 32) color(80 0 200) base(Targetname, Angles) = Pickup
+@BaseClass base(Targetname, Angles) = RenderFields
 [
 	renderfx(choices) : "Render FX" : 0 =
 	[
@@ -56,6 +56,10 @@
 
 	renderamt(integer) : "FX Amount (1 - 255)"
 	rendercolor(color255) : "FX Color (R G B)" : "0 0 0"
+]
+
+@BaseClass size(0 0 0, 32 32 32) color(80 0 200) base(RenderFields) = Pickup
+[
 	movetype(choices) : "Gravity Setting" : 0 =
 	[
 		0: "Fall to the ground (default)"
@@ -73,13 +77,14 @@
 	]
 ]
 
-@BaseClass size(-16 -16 0, 16 16 32) color(2 64 240) base(Pickup ) = Weapon
+@BaseClass size(-16 -16 0, 16 16 32) color(2 64 240) base(Pickup) = Weapon
 [
 	dmg(integer) : "Custom Damage" : 0
 	wpn_v_model(studio) : "Custom V_Model" : ""
 	wpn_w_model(studio) : "Custom W_Model" : ""
 	wpn_p_model(studio) : "Custom P_Model" : ""
 	soundlist(string) : "Sound Replacement File"
+	noise(sound) : "Shoot Sound (May not be supported for all weapons)" : ""
 	CustomSpriteDir(string) : "Custom sprite directory"
 
 	IsNotAmmoItem(choices) : "Is Ammo Item" : 0 =
@@ -95,25 +100,53 @@
 	]
 ]
 
-@BaseClass size(-8 -8 0, 8 8 16) color(4 128 240) base(Pickup ) = Ammo
+@BaseClass size(-8 -8 0, 8 8 16) color(4 128 240) base(Pickup) = Ammo
 [
 	model(studio) : "Custom Model" : ""
 	body(integer) : "Body" : 0
 	skin(integer) : "Skin" : 0
 ]
-
+// Keys: set the key to the stock weapon name and the value to the custom weapon name e.g "weapon_357" "weapon_hl2_revolver"
 @PointClass base(Targetname) size(-4 -4 -4, 4 4 4) color(200 100 50) = info_register_hl2weapons : "Register Half-Life 2 Weapons"
 [
 	spawnflags(Flags) =
 	[
-		0 : "Replace stock weapons" : 0
+		0 : "Don't replace stock weapons" : 0
+	]
+]
+
+@BaseClass = AttackObject
+[
+	classify(choices) : "Classification" : 0 =
+	[
+		-1 : "None"
+		0 : "Object Default"
+		1 : "Machine"
+		2 : "Player"
+		3 : "Human Passive"
+		4 : "Human Military"
+		5 : "Alien Military"
+		6 : "Alien Passive"
+		7 : "Alien Monster"
+		8 : "Alien Prey"
+		9 : "Alien Predator"
+		10 : "Insect"
+		11 : "Player Ally"
+		12 : "Player Hornet/Snark"
+		13 : "Alien Hornet/Snark"
+		14 : "X-Race"
+		15 : "X-Race: Shocktrooper/Voltigore"
+		16 : "Team 1"
+		17 : "Team 2"
+		18 : "Team 3"
+		19 : "Team 4"
+		99 : "Barnacle"
 	]
 ]
 
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_alyxgun.mdl" ) = weapon_hl2_alyxgun : "Alyx's Gun" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_ar2.mdl" ) = weapon_hl2_ar2 : "AR2 Pulse Rifle" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_crossbow.mdl" ) = weapon_hl2_crossbow : "Crossbow" []
-@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_grenade.mdl" ) = weapon_hl2_frag : "Frag Grenade" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_gravgun.mdl" ) = weapon_hl2_gravgun : "Gravity Gun" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_oicw.mdl" ) = weapon_hl2_oicw : "OICW Assault Rifle" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_usp.mdl" ) = weapon_hl2_pistol : "USP 9mm Pistol" []
@@ -123,6 +156,8 @@
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_mp7.mdl" ) = weapon_hl2_smg : "MP7 Submachine Gun" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_combinesniper.mdl" ) = weapon_hl2_sniperrifle : "Overwatch Sniper Rifle" []
 @PointClass base( Weapon, Targetx ) studio( "models/hl2/w_stunstick.mdl" ) = weapon_hl2_stunstick : "Stun Stick" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_grenade.mdl" ) = weapon_hl2_frag : "Frag Grenade" []
+@PointClass base( Weapon, Targetx ) studio( "models/hl2/w_hopper.mdl" ) = weapon_hl2_hoppermine : "Hopper Mine Weapon" []
 
 @PointClass base( Ammo, Targetx ) studio( "models/hl2/w_ar2_clip.mdl" ) = ammo_hl2_ar2 : "AR2 Ammo" []
 @PointClass base( Ammo, Targetx ) studio( "models/hl2/w_ar2_energy.mdl" ) = ammo_hl2_ar2_altfire : "AR2 Energy Ball Ammo" []
@@ -130,3 +165,51 @@
 @PointClass base( Ammo, Targetx ) studio( "models/hl2/w_argrenade_20mm.mdl" ) = ammo_hl2_oicw_grenade : "20mm Grenades" []
 @PointClass base( Ammo, Targetx ) studio( "models/hl2/w_argrenade_20mmclip.mdl" ) = ammo_hl2_oicw_grenadeclip : "20mm Grenade Clip" []
 @PointClass base( Ammo, Targetx ) studio( "models/hl2/w_sniperrifle_clip.mdl" ) = ammo_hl2_sniperrifle : "Sniper Rifle Ammo" []
+
+@PointClass base( RenderFields, Targetx, AttackObject ) size( 4 4 4, -4 -4 -4 ) studio( "models/hl2/w_hopper.mdl" ) = env_hl2_hoppermine : "Hopper Mine"
+[
+	model(studio) : "Custom Model" : ""
+	// Radius for when a hoppermine becomes alerted - hops when target goes past a percentage of this radius
+	radius(string) : "Alert radius" : ""
+]
+
+@PointClass base( RenderFields ) size( -16 -16 0, 16 16 72 ) color( 83 170 213 ) = env_hl2_pulsecannon : "Combine Pulse Cannon Turret"
+[
+	offset(string) : "Offset (X Y Z)" : "0 0 42"
+	cool_interval(string) : "Cooldown Interval" : "1.0"
+	tripod_model(string) : "Tripod Model" : "models/hl2/w_tripod.mdl"
+	spawnflags(Flags) =
+	[
+		1 : "Active" : 0
+		16: "Only Direct" : 0
+		32: "Controllable" : 0
+		512: "Use Relations" : 0
+		1024: "Player can't fire" : 0
+	]
+
+	yawrate(string) : "Yaw Rate" : "30"
+	yawrange(string) : "Yaw Range" : "180"
+	yawtolerance(string) : "Yaw Tolerance" : "15"
+	pitchrate(string) : "Pitch Rate" : "0"
+	pitchrange(string) : "Pitch Range" : "0"
+	pitchtolerance(string) : "Pitch Tolerance" : "5"
+	barrel(string) : "Barrel Length" : "0"
+	barrely(string) : "Barrel Horizontal" : "0"
+	barrelz(string) : "Barrel Vertical" : "0"
+	spritesmoke(string) : "Smoke Sprite" : ""
+	spriteflash(string) : "Flash Sprite" : ""
+	spritescale(string) : "Sprite Scale" : "1"
+	noise(sound) : "Shoot Sound" : ""
+	rotatesound(sound) : "Rotate Sound" : ""
+	firerate(string) : "Rate of Fire" : "1"
+	bullet_damage(string) : "Damage Per Bullet" : "0"
+	persistence(string) : "Firing Persistence" : "1"
+	firespread(choices) : "Bullet Accuracy" : 1 =
+	[
+		0: "Perfect Shot"
+		1: "Small cone"
+		2: "Medium cone"
+		3: "Large cone"
+		4: "Extra-large cone"
+	]
+]
