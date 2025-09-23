@@ -36,7 +36,6 @@ Credits:
 #include "hl2/weapon_hl2_gravgun"
 #include "hl2/weapon_hl2_frag"
 #include "hl2/weapon_hl2_hoppermine"
-#include "hl2/weapon_hl2_manhack"
 #include "hl2/weapon_hl2_pistol"
 #include "hl2/weapon_hl2_alyxgun"
 #include "hl2/weapon_hl2_revolver"
