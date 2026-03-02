@@ -114,8 +114,9 @@ void Tick(EHandle hGrenade, int ticks)
         {   // explode 
             if( GrenadeIsLemonade( hGrenade ) )
             {
-                CBaseEntity@ pThrower = g_EntityFuncs.Instance( hGrenade.GetEntity().pev.owner );
-                FIRE_ZONES.insertLast( @FireZone( hGrenade.GetEntity().pev.origin, CLASS( pThrower.m_iClassSelection ), g_Engine.time ) );
+                const CLASS Classification = CLASS( hGrenade.GetEntity().m_iClassSelection );
+                g_EngineFuncs.ServerPrint( "Throwing a lemonade with classification: " + Classification );
+                FIRE_ZONES.insertLast( @FireZone( hGrenade.GetEntity().pev.origin, Classification, g_Engine.time ) );
                 g_SoundSystem.EmitSoundDyn( hGrenade.GetEntity().edict(), CHAN_ITEM, "weapons/splauncher_impact.wav", 1.0f, ATTN_NORM );
                 g_EntityFuncs.Remove( hGrenade.GetEntity() );
             }
@@ -293,7 +294,9 @@ final class weapon_hl2_frag : CustomWeaponBase, ThrowableWeaponBase
         
         if( pFrag is null )
             return null;
-
+        // !-LIMITATION-!: CGrenade spawned from ShootTimed (and ShootContact) does not inherit the owner's classification - has to be set explicitly after it's spawned
+        // Player class selection seems to return 0 when not overriden the player's class, so we check for that and set the incendiary to player class instead
+        pFrag.SetClassification( m_pPlayer.m_iClassSelection == 0 ? CLASS_PLAYER : m_pPlayer.m_iClassSelection );
         const bool isLemonade = m_iAttackType == FRAG_LEMONADE;
         g_EntityFuncs.SetModel( pFrag, isLemonade ? "models/hl2/w_lemonade.mdl" : "models/hl2/w_grenade.mdl" );
         pFrag.pev.body = 1;// LED
@@ -454,12 +457,12 @@ final class FireZone
         for( uint i = 0; i < P_ENTITIES.length(); i++ )
         {
             CBaseEntity@ pEntity = P_ENTITIES[i];
-
+            
             if
             ( 
                 pEntity is null || 
                 !pEntity.IsAlive() || 
-                pEntity.IRelationshipByClass( Classification ) < R_DL || 
+                pEntity.IRelationshipByClass( CLASS( Classification ) ) < R_NO || 
                 pEntity.pev.absmin.z > pos.z + 64.0f || 
                 pEntity.pev.absmax.z < pos.z
             )
