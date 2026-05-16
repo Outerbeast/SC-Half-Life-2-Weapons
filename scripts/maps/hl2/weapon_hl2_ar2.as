@@ -415,9 +415,9 @@ final class ar2_energy_ball : ScriptBaseAnimating
         @fnCheckStuck = g_Scheduler.SetTimeout( this, "CheckStuck", 0.2f, self.pev.origin );
     }
 
-    void CheckStuck(const Vector vecPrevPos)
+    void CheckStuck(const Vector& in vecPrevPos)
     {
-        if( self.pev.origin == vecPrevPos )
+        if( self !is null && self.pev.origin == vecPrevPos )
             Detonate();
     }
 
@@ -617,7 +617,6 @@ final class ar2_energy_ball : ScriptBaseAnimating
         shockwave.End();
 
         g_PlayerFuncs.ScreenShake( self.pev.origin, 10, 1, 5, 64 );
-
         g_EntityFuncs.Remove( self );
     }
 

@@ -508,15 +508,12 @@ final class env_hl2_pulsecannon : ScriptBaseAnimating
             else if( m_pAimLaser !is null && m_pAimLaser.pev.effects & EF_NODRAW == 0 )
                 m_pAimLaser.pev.effects |= EF_NODRAW;
             // Passive cooling when the cannon is not being shot.
-            if( T > 0.0f && g_Engine.time > pCannon.m_fireLast + 5.0f )
-            {
-                if( g_Engine.time > flLastCoolTime + flCoolInterval )
-                {   // Start cooling down.
-                    CoolDown();
+            if( T > 0.0f && g_Engine.time > pCannon.m_fireLast + 5.0f && g_Engine.time > flLastCoolTime + flCoolInterval )
+            {   // Start cooling down.
+                CoolDown();
 
-                    if( hBarrelSmoke )
-                        hBarrelSmoke.GetEntity().pev.health = 0.0f;
-                }
+                if( hBarrelSmoke )
+                    hBarrelSmoke.GetEntity().pev.health = 0.0f;
             }
         }
 

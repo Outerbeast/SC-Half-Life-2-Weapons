@@ -284,7 +284,18 @@ final class weapon_hl2_gravgun : CustomGunBase
 
         CBaseEntity@ pCarried = m_hCarried.GetEntity();
         pCarried.pev.velocity = g_vecZero;
-        pCarried.Touch( m_pPlayer );
+        // !-ISSUE-!: Touch method invocation is causing weapons shoot the wielder when fired. Reason unknown, likely game bug.
+        if( cast<CBasePlayerWeapon@>( pCarried ) !is null )
+        {   // Let's just equip the weapon directly then drop it.
+            if( m_pPlayer.HasNamedPlayerItem( pCarried.GetClassname() ) is null )
+            {
+                Drop();
+                m_pPlayer.GiveNamedItem( pCarried.GetClassname() );
+            }
+        }
+        else
+            pCarried.Touch( m_pPlayer );
+
         g_SoundSystem.EmitSoundDyn( pCarried.edict(), CHAN_ITEM, "hl2/physcannon_pickup.ogg", 0.9f, ATTN_NORM, 0, PITCH_NORM );
         g_SoundSystem.EmitSoundDyn( m_pPlayer.edict(), CHAN_WEAPON, "hl2/superphys_hold_loop.ogg", 0.9f, ATTN_NORM, SND_FORCE_LOOP, PITCH_NORM );
 
