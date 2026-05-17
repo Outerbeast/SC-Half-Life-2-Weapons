@@ -286,11 +286,11 @@ final class weapon_hl2_gravgun : CustomGunBase
         pCarried.pev.velocity = g_vecZero;
         // !-ISSUE-!: Touch method invocation is causing weapons shoot the wielder when fired. Reason unknown, likely game bug.
         if( cast<CBasePlayerWeapon@>( pCarried ) !is null )
-        {   // Let's just equip the weapon directly then drop it.
+        {   
             if( m_pPlayer.HasNamedPlayerItem( pCarried.GetClassname() ) is null )
             {
-                Drop();
-                m_pPlayer.GiveNamedItem( pCarried.GetClassname() );
+                Drop();// Drop the weapon first before equipping (or the players shoots themself when firing)
+                pCarried.Touch( m_pPlayer );
             }
         }
         else
